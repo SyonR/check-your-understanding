@@ -11,7 +11,9 @@ from typing import Any
 
 
 DATA_MARKER = "__MODULE_DATA_JSON__"
-EXPECTED_GUIDE_TABS = [
+
+# The six tabs that are always required, in order.
+REQUIRED_GUIDE_TABS = [
     ("setup", "Setup"),
     ("first-tasks", "First Tasks"),
     ("architecture", "Architecture"),
@@ -19,6 +21,11 @@ EXPECTED_GUIDE_TABS = [
     ("test-debug", "Test & Debug"),
     ("reference", "Reference"),
 ]
+
+# The optional 7th tab: present when identity.role == "junior" or any
+# relevant tech_familiarity == 0.  When present it must be last.
+OPTIONAL_GUIDE_TAB = ("key-concepts", "Key Concepts")
+
 GUIDE_FACT_CATEGORIES = ["setup", "first_tasks", "architecture", "patterns", "test_debug", "reference"]
 
 
@@ -37,27 +44,52 @@ def require_list(value: Any, label: str) -> list[Any]:
 def validate_guide(value: Any) -> dict[str, Any]:
     guide = require_object(value, "curriculum.guide")
     tabs = require_list(guide.get("tabs"), "curriculum.guide.tabs")
-    if len(tabs) != len(EXPECTED_GUIDE_TABS):
-        raise ValueError(f"curriculum.guide.tabs must contain exactly {len(EXPECTED_GUIDE_TABS)} tabs")
 
-    for index, ((expected_id, expected_label), raw_tab) in enumerate(zip(EXPECTED_GUIDE_TABS, tabs)):
-        tab = require_object(raw_tab, f"curriculum.guide.tabs[{index}]")
+    n = len(tabs)
+    if n not in (len(REQUIRED_GUIDE_TABS), len(REQUIRED_GUIDE_TABS) + 1):
+        raise ValueError(
+            f"curriculum.guide.tabs must contain {len(REQUIRED_GUIDE_TABS)} or "
+            f"{len(REQUIRED_GUIDE_TABS) + 1} tabs, got {n}"
+        )
+
+    has_optional = n == len(REQUIRED_GUIDE_TABS) + 1
+
+    # Validate the six required tabs positionally.
+    for index, (expected_id, expected_label) in enumerate(REQUIRED_GUIDE_TABS):
+        tab = require_object(tabs[index], f"curriculum.guide.tabs[{index}]")
         if tab.get("id") != expected_id or tab.get("label") != expected_label:
             raise ValueError(
                 f"curriculum.guide.tabs[{index}] must be {expected_id!r} / {expected_label!r}"
             )
+        _validate_standard_tab_content(tab, index)
+
+    # Validate the optional Key Concepts tab when present.
+    if has_optional:
+        tab = require_object(tabs[6], "curriculum.guide.tabs[6]")
+        opt_id, opt_label = OPTIONAL_GUIDE_TAB
+        if tab.get("id") != opt_id or tab.get("label") != opt_label:
+            raise ValueError(
+                f"curriculum.guide.tabs[6] must be {opt_id!r} / {opt_label!r} when a 7th tab is present"
+            )
         content = tab.get("content")
         if not isinstance(content, str) or not content.strip():
-            raise ValueError(f"curriculum.guide.tabs[{index}].content must be non-empty text")
-        if len(content.split()) > 80:
-            raise ValueError(f"curriculum.guide.tabs[{index}].content must be 80 words or fewer")
-        bullet_count = sum(
-            1 for line in content.splitlines() if line.lstrip().startswith(("- ", "* "))
-        )
-        if bullet_count > 4:
-            raise ValueError(f"curriculum.guide.tabs[{index}].content must have at most four bullets")
+            raise ValueError("curriculum.guide.tabs[6] (Key Concepts) content must be non-empty text")
+        # Key Concepts holds short definitions, not bullet lists — no word/bullet cap enforced.
 
     return guide
+
+
+def _validate_standard_tab_content(tab: dict[str, Any], index: int) -> None:
+    content = tab.get("content")
+    if not isinstance(content, str) or not content.strip():
+        raise ValueError(f"curriculum.guide.tabs[{index}].content must be non-empty text")
+    if len(content.split()) > 80:
+        raise ValueError(f"curriculum.guide.tabs[{index}].content must be 80 words or fewer")
+    bullet_count = sum(
+        1 for line in content.splitlines() if line.lstrip().startswith(("- ", "* "))
+    )
+    if bullet_count > 4:
+        raise ValueError(f"curriculum.guide.tabs[{index}].content must have at most four bullets")
 
 
 def validate_guide_facts(value: Any) -> None:
@@ -135,16 +167,16 @@ def main() -> None:
     parser.add_argument(
         "session_file",
         nargs="?",
-        default="onboarding-session.json",
+        default="onboarding/onboarding-session.json",
         type=Path,
-        help="Completed onboarding session JSON (default: ./onboarding-session.json)",
+        help="Completed onboarding session JSON (default: ./onboarding/onboarding-session.json)",
     )
     parser.add_argument(
         "output_dir",
         nargs="?",
-        default="learning-module",
+        default="onboarding/learning-module",
         type=Path,
-        help="Output directory (default: ./learning-module)",
+        help="Output directory (default: ./onboarding/learning-module)",
     )
     args = parser.parse_args()
 

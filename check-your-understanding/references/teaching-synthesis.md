@@ -1,6 +1,9 @@
 # teaching-synthesis
 
-Takes `repo_context` + `user_data` and produces `curriculum.slides` — the ordered lesson specs that form the interactive learning module. This is the only phase that decides _what_ to teach, _in what order_, and _at what depth_.
+Takes `repo_context` + `user_data` and produces `curriculum.slides`. This phase is split into two steps; read both reference files and apply them in order:
+
+1. **[`what-to-teach.md`](what-to-teach.md)** — Decides _which_ slides to include and in what order, based on the goal and the developer's knowledge gaps.
+2. **[`how-to-format.md`](how-to-format.md)** — Decides _how_ to write each slide: depth per role, preferred learning style, analogies, and slide count limits.
 
 ## Inputs
 
@@ -78,7 +81,7 @@ For any concept where `tech_familiarity[tag] <= 1`, add one analogy line to the 
 
 ## Output
 
-Populate `curriculum` in `onboarding-session.json`:
+Populate `curriculum` in `onboarding/onboarding-session.json`:
 
 ```json
 {

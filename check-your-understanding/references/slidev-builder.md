@@ -16,10 +16,9 @@ If the current working directory is elsewhere, invoke the script by its full pat
 ## Output directory structure
 
 ```
-slidev/
-  slides.md          <- the complete presentation (curriculum + quiz slide)
-  package.json       <- copied from the skill template
-  style.css          <- copied global responsive and overflow styles
+onboarding/slidev/
+  slides.md          <- the complete presentation (curriculum + quiz slides)
+  package.json       <- minimal Slidev dependency
   components/
     QuizQuestion.vue <- copied from the skill template
     QuizResult.vue   <- copied from the skill template
@@ -38,9 +37,13 @@ highlighter: shiki
 ---
 ```
 
-Then one `---`-delimited section per slide, setting `layout:` from `curriculum.slides[i].layout` and writing the slide's `content` as Markdown below it. Speaker notes go in `<!-- ... -->` directly after the content. If `teaching_notes` is present, append it to the notes block prefixed with `> Teaching note:`.
+Then one `---`-delimited section per slide, setting `layout:` from `curriculum.slides[i].layout` and writing the slide's `content` as Markdown below it. Speaker notes go in `<!-- ... -->` directly after the content. If a slide has a `notes` field (written by the teaching-synthesis phase), put it in the `<!-- ... -->` block. If a slide also has a `teaching_notes` field (written by the iterate-on-failure phase), append it to the same block prefixed with `> Teaching note:`.
 
-After all curriculum slides, append the interactive quiz directly. Do not add a separate `# Check Your Understanding` transition slide. Render `<QuizQuestion>` for each question and `<QuizResult>` at the end.
+After all curriculum slides, append the check-your-understanding quiz section:
+
+1. A `layout: section` slide titled `# Check Your Understanding`.
+2. One slide per question that renders a `<QuizQuestion>` component (one question per slide prevents content overflow).
+3. A final `<QuizResult>` slide that shows the score once all questions have been answered.
 
 ## Slide rendering rules
 
@@ -56,11 +59,51 @@ After all curriculum slides, append the interactive quiz directly. Do not add a 
 `QuizQuestion.vue`, `QuizResult.vue`, `style.css`, and `package.json` are maintained under `assets/slidev-template/`. The installer copies them byte-for-byte. Bob must not recreate their implementation from prose.
 
 On the generated quiz slide, include each question's `slide_ref` in the stored result passed to `QuizResult`, along with `id` and `correct`.
+## QuizQuestion.vue
+
+Write once to `./onboarding/slidev/components/QuizQuestion.vue`. It must:
+- Display `prompt` as a heading
+- Render each option as a `<button>`
+- On click: disable all buttons; highlight correct answer green, chosen-wrong answer red
+- Show `rationale` text after an answer is chosen
+- Emit `answered` event with `{ id, correct: boolean }`
+
+## QuizResult.vue
+
+Write once to `./onboarding/slidev/components/QuizResult.vue`. It:
+- Receives an array of `{ id, correct }` results
+- When `results.length == questions.length`: displays score and pass/fail state
+- On fail: lists the `slide_ref` for each failed question as "Review: {slide title}"
+
+## package.json
+
+```json
+{
+  "name": "onboarding-slides",
+  "private": true,
+  "scripts": {
+    "dev": "slidev slides.md --open",
+    "build": "slidev build slides.md"
+  },
+  "dependencies": {
+    "@slidev/cli": "^0.49.0",
+    "@slidev/theme-default": "latest"
+  }
+}
+```
+
+## public/theme.css
+
+Write once to `./onboarding/slidev/public/theme.css`. Do not overwrite on regeneration if the file already exists.
+
+```css
+/* Custom theme overrides — edit freely */
+```
 
 ## Post-generation instruction
 
 After writing all files, print:
 ```
-Slidev deck written to ./slidev/
-Run: cd slidev && npm install && npm run dev
+Slidev deck written to ./onboarding/slidev/
+Run: cd onboarding/slidev && npm install && npm run dev
 ```

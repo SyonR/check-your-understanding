@@ -7,7 +7,7 @@ Conduct an adaptive terminal questionnaire and write the result to `user_data.js
 
 `repo_context.tech_tags` must be populated before running this phase. Use it to generate the tech-familiarity questions.
 
-## Layer 1 — Identity (always ask)
+## Identity — Layer 1 (always ask)
 
 Present as numbered multiple-choice or short-answer prompts. Use `ask_followup_question` for each.
 
@@ -18,7 +18,7 @@ Present as numbered multiple-choice or short-answer prompts. Use `ask_followup_q
 | What is your current role? | single choice: junior / mid / senior / lead / other | `identity.role` |
 | How do you prefer to learn? | single choice: top-down (big picture first) / bottom-up (details first) / example-first / concept-first | `preferred_style` |
 
-## Layer 2 — Tech familiarity (adaptive: one question per tech_tag)
+## Tech familiarity — Layer 2 (adaptive: one question per tech_tag)
 
 For each tag in `repo_context.tech_tags`, ask a familiarity question. Skip tags where the answer is obvious from the identity layer (e.g. a senior developer with 7+ years asked about `javascript`).
 
@@ -30,7 +30,7 @@ Store result as `user_data.tech_familiarity[tag] = 0|1|2|3`.
 
 **Batching rule:** Group related tags into one question when they are tightly coupled (e.g. `react` + `typescript`, `postgres` + `prisma`). Ask no more than 6 familiarity questions total; prioritise tags that appear in the hotspots region of `repo_context.summary`.
 
-## Layer 3 — Task context (always ask)
+## Task context — Layer 3 (always ask)
 
 | Question | Type | Stores in |
 |---|---|---|
@@ -43,7 +43,7 @@ If `has_ticket` is false, skip `ticket_ref` and `ticket_summary` but always coll
 
 ## Output
 
-Write `user_data.json` in the session output directory. Also write the `user_data` block into `onboarding-session.json`:
+Write `onboarding/user_data.json`. Also write the `user_data` block into `onboarding/onboarding-session.json`:
 
 ```json
 {
