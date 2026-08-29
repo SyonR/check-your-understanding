@@ -1,7 +1,7 @@
 
 # iterate-on-failure
 
-Runs only when `quiz_result.passed == false`. Takes the set of failed questions, updates `curriculum.slides` with targeted `teaching_notes`, and regenerates the Slidev deck.
+Runs only when `quiz_result.passed == false`. Takes the set of failed questions, updates `curriculum.slides` with targeted `teaching_notes`, and rebuilds the offline learning module.
 
 ## Inputs
 
@@ -29,25 +29,25 @@ For each failed slide, write a `teaching_notes` string into `curriculum.slides[i
 - Preserve all other slides unchanged.
 - If multiple failed questions map to the same slide, consolidate into one `teaching_notes` string.
 
-### Step 3 — Regenerate deck
+### Step 3 — Rebuild module
 
-After updating `curriculum.slides`, re-run the slidev-builder phase to regenerate `./onboarding/slidev/slides.md`.
+After updating `curriculum.slides`, re-run the HTML builder phase to regenerate `./onboarding/index.html`.
 
 Do not regenerate the quiz. The quiz stays unchanged so the developer retakes the same questions.
 
 ## Output
 
-Updated `onboarding-session.json` with `teaching_notes` populated on affected slides. Updated `./slidev/slides.md`.
+Updated `onboarding-session.json` with `teaching_notes` populated on affected slides. Updated `./onboarding/index.html`.
 
 Print:
 ```
-{n} slide(s) updated with teaching notes.
-Deck regenerated. Run: cd onboarding/slidev && npm run dev
+{n} lesson(s) updated with teaching notes.
+Learning module rebuilt. Open: onboarding/index.html
 ```
 
 ## Iteration limit
 
-Do not iterate more than 3 times on the same session. After 3 failures, append a final `layout: section` slide:
+Do not iterate more than 3 times on the same session. After 3 failures, append a final `layout: section` lesson:
 
 ```
 # Recommended next step

@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Build an offline interactive learning module from onboarding session data."""
 
 from __future__ import annotations

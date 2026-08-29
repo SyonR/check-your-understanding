@@ -1,7 +1,17 @@
 
 # slidev-builder
 
-Takes `curriculum.slides` + `quiz.questions` and writes a self-contained Slidev presentation to `./onboarding/slidev/`. The directory is the deliverable; the developer opens it with `npx slidev`.
+Takes `curriculum.slides` + `quiz.questions` and writes a self-contained Slidev presentation to `./slidev/`. Static layout files are copied from maintained skill assets; only `slides.md` is generated for the session.
+
+## Install the reusable template
+
+Run `scripts/install_slidev_template.py` from the directory containing the skill's `SKILL.md`, passing the session's `./slidev` directory:
+
+```sh
+python scripts/install_slidev_template.py ./slidev
+```
+
+If the current working directory is elsewhere, invoke the script by its full path. Do not read, synthesize, or rewrite the template files during generation. To change the layout for all future sessions, edit `assets/slidev-template/`. Rerun the installer to synchronize an existing session. The installer never touches `slides.md` or `package-lock.json`.
 
 ## Output directory structure
 
@@ -10,10 +20,8 @@ onboarding/slidev/
   slides.md          <- the complete presentation (curriculum + quiz slides)
   package.json       <- minimal Slidev dependency
   components/
-    QuizQuestion.vue <- reusable multiple-choice quiz component
-    QuizResult.vue   <- pass/fail result display
-  public/
-    theme.css        <- custom CSS overrides (generated once, not overwritten on regeneration)
+    QuizQuestion.vue <- copied from the skill template
+    QuizResult.vue   <- copied from the skill template
 ```
 
 ## slides.md format
@@ -43,7 +51,14 @@ After all curriculum slides, append the check-your-understanding quiz section:
 - `two-cols` layout uses the Slidev `::right::` separator to split left and right columns.
 - Code blocks use fenced triple-backtick with a language identifier (`ts`, `tsx`, `sh`, `json`, `yaml`).
 - Mermaid diagrams use fenced triple-backtick with `mermaid`.
+- Slidev uses a fixed 16:9 canvas and scales it to the viewport. Keep each slide focused on one main idea; split dense material across slides rather than depending on scrolling for normal reading.
+- The shared theme provides vertical overflow scrolling as a safety net on every layout and horizontal scrolling for wide tables, code, and Mermaid diagrams. Do not override those overflow rules in generated slides.
 
+## Static template files
+
+`QuizQuestion.vue`, `QuizResult.vue`, `style.css`, and `package.json` are maintained under `assets/slidev-template/`. The installer copies them byte-for-byte. Bob must not recreate their implementation from prose.
+
+On the generated quiz slide, include each question's `slide_ref` in the stored result passed to `QuizResult`, along with `id` and `correct`.
 ## QuizQuestion.vue
 
 Write once to `./onboarding/slidev/components/QuizQuestion.vue`. It must:

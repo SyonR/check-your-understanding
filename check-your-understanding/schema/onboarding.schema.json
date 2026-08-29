@@ -1,16 +1,47 @@
-﻿{
+  {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "OnboardingSession",
   "description": "Complete state for one developer onboarding session. Written progressively; any field may be absent while the pipeline is mid-run.",
+  "definitions": {
+    "guideFact": {
+      "type": "object",
+      "properties": {
+        "text": { "type": "string", "minLength": 1 },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "required": ["text", "evidence"],
+      "additionalProperties": false
+    },
+    "guideFactList": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "items": { "$ref": "#/definitions/guideFact" }
+    },
+    "guideTab": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "enum": ["setup", "first-tasks", "architecture", "patterns", "test-debug", "reference"] },
+        "label": { "type": "string" },
+        "content": { "type": "string", "minLength": 1 }
+      },
+      "required": ["id", "label", "content"],
+      "additionalProperties": false
+    }
+  },
   "type": "object",
   "properties": {
 
     "repo_context": {
-      "description": "Output of the understand-repo phase.",
+      "description": "Output of the understand-repo phase. Populated once; enriched on subsequent runs if coverage gaps are found.",
       "type": "object",
       "properties": {
-        "generated_at":  { "type": "string", "format": "date-time" },
-        "source_path":   { "type": "string", "description": "Absolute path of the repo that was analysed." },
+        "generated_at": { "type": "string", "format": "date-time" },
+        "source_path": { "type": "string", "description": "Absolute path of the repo that was analysed." },
         "coverage": {
           "type": "object",
           "description": "One boolean per coverage-checklist area. true = evidence found, false = gap.",
@@ -45,9 +76,9 @@
         "identity": {
           "type": "object",
           "properties": {
-            "name":             { "type": "string" },
-            "years_experience": { "type": "integer", "minimum": 0 },
-            "role":             { "type": "string", "enum": ["junior", "mid", "senior", "lead", "other"] }
+            "name":              { "type": "string" },
+            "years_experience":  { "type": "integer", "minimum": 0 },
+            "role":              { "type": "string", "enum": ["junior", "mid", "senior", "lead", "other"] }
           }
         },
         "tech_familiarity": {
@@ -57,40 +88,45 @@
         },
         "task_context": {
           "type": "object",
+          "description": "The concrete work item driving this onboarding.",
           "properties": {
-            "has_ticket":     { "type": "boolean" },
-            "ticket_ref":     { "type": "string" },
-            "ticket_summary": { "type": "string" },
-            "goal":           { "type": "string", "description": "One-sentence description of what they need to accomplish." }
-          },
-          "required": ["goal"]
+            "has_ticket":    { "type": "boolean" },
+            "ticket_ref":    { "type": "string", "description": "Jira/Linear/GitHub issue ID or Slack thread URL." },
+            "ticket_summary":{ "type": "string" },
+            "goal":          { "type": "string", "description": "One-sentence description of what they need to accomplish." }
+          }
         },
         "preferred_style": {
           "type": "string",
-          "enum": ["bottom-up", "top-down", "example-first", "concept-first"]
+          "enum": ["bottom-up", "top-down", "example-first", "concept-first"],
+          "description": "How they prefer to be taught."
+        },
+        "extra_answers": {
+          "type": "object",
+          "description": "Any additional free-form answers keyed by question id.",
+          "additionalProperties": { "type": "string" }
         }
       },
       "required": ["collected_at"]
     },
 
     "curriculum": {
-      "description": "Output of the teaching-synthesis phase.",
+      "description": "Output of the teaching-synthesis phase: the ordered teaching plan for this specific developer on this specific repo.",
       "type": "object",
       "properties": {
         "generated_at": { "type": "string", "format": "date-time" },
         "slides": {
           "type": "array",
-          "minItems": 5,
-          "maxItems": 20,
+          "description": "Ordered list of slide specs. One slide per teaching unit.",
           "items": {
             "type": "object",
             "properties": {
-              "id":             { "type": "string" },
-              "title":          { "type": "string" },
-              "layout":         { "type": "string", "enum": ["cover", "default", "center", "two-cols", "section", "image-right", "iframe-right"] },
-              "content":        { "type": "string" },
-              "notes":          { "type": "string", "description": "Speaker / analogy notes written by teaching-synthesis." },
-              "teaching_notes": { "type": "string", "description": "Remediation notes appended by iterate-on-failure when the developer failed a question linked to this slide." }
+              "id":       { "type": "string" },
+              "title":    { "type": "string" },
+              "layout":   { "type": "string", "description": "Learning module layout name (e.g. 'default', 'two-cols', 'center', 'section')." },
+              "content":  { "type": "string", "description": "Markdown body for this slide." },
+              "notes":    { "type": "string", "description": "Speaker notes / teaching notes for this slide." },
+              "teaching_notes": { "type": "string", "description": "Remediation notes written on quiz failure; appended by the iterate-on-failure phase." }
             },
             "required": ["id", "title", "layout", "content"]
           }
