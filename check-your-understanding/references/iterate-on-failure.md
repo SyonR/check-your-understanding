@@ -31,18 +31,18 @@ For each failed slide, write a `teaching_notes` string into `curriculum.slides[i
 
 ### Step 3 — Rebuild module
 
-After updating `curriculum.slides`, re-run the HTML builder phase to regenerate `./onboarding/index.html`.
+After updating `curriculum.slides`, re-run the HTML builder phase to regenerate `./onboarding/learning-module/index.html`.
 
 Do not regenerate the quiz. The quiz stays unchanged so the developer retakes the same questions.
 
 ## Output
 
-Updated `onboarding-session.json` with `teaching_notes` populated on affected slides. Updated `./onboarding/index.html`.
+Updated `onboarding/onboarding-session.json` with `teaching_notes` populated on affected slides. Updated `./onboarding/learning-module/index.html`.
 
 Print:
 ```
 {n} lesson(s) updated with teaching notes.
-Learning module rebuilt. Open: onboarding/index.html
+Learning module rebuilt. Open: onboarding/learning-module/index.html
 ```
 
 ## Iteration limit

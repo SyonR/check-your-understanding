@@ -66,7 +66,7 @@ Prefer executable files and configuration over README claims when they conflict.
 
 ## Output
 
-Populate `repo_context` in `onboarding-session.json`:
+Populate `repo_context` in `onboarding/onboarding-session.json`:
 
 ```json
 {

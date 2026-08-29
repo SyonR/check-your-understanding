@@ -74,13 +74,6 @@ If `quiz_result.passed == false`: read [`references/iterate-on-failure.md`](refe
 |---|---|
 | `onboarding/onboarding-session.json` | All phases (progressive) |
 | `onboarding/user_data.json` | Phase 2 |
-| `onboarding/index.html` | Deterministically built from session data in Phase 5; rebuilt by Phase 6 |
-| `onboarding/assets/mermaid.min.js` | Copied from the pinned offline template by Phase 5 |
-| `onboarding/assets/MERMAID-LICENSE.txt` | Mermaid license copied by Phase 5 |
-| `onboarding/onboarding-session.json` | All phases (progressive) |
-| `onboarding/user_data.json` | Phase 2 |
-| `onboarding/slidev/slides.md` | Phase 5, updated by Phase 6 |
-| `onboarding/slidev/package.json` | Phase 5 (once) |
-| `onboarding/slidev/components/QuizQuestion.vue` | Phase 5 (once) |
-| `onboarding/slidev/components/QuizResult.vue` | Phase 5 (once) |
-| `onboarding/slidev/public/theme.css` | Phase 5 (once, never overwritten) |
+| `onboarding/learning-module/index.html` | Phase 5; rebuilt by Phase 6 |
+| `onboarding/learning-module/assets/mermaid.min.js` | Phase 5 (once, copied from pinned template) |
+| `onboarding/learning-module/assets/MERMAID-LICENSE.txt` | Phase 5 (once, copied from pinned template) |
