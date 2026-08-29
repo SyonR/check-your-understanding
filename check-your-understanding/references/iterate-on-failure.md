@@ -25,13 +25,13 @@ For each failed slide, write a `teaching_notes` string into `curriculum.slides[i
 
 - State what the correct answer is and why, in plain language.
 - Reference the exact file or line in the repo that is the source of truth.
-- If the failure suggests the slide's content was unclear, rewrite `slide.content` to make the concept more explicit.
+- **Do not rewrite `slide.content`.** The one exception: if the slide has no diagram and adding a Mermaid diagram would directly clarify the failed concept, you may add it to `slide.content`.
 - Preserve all other slides unchanged.
-- If multiple failed questions map to the same slide, consolidate into one teaching note.
+- If multiple failed questions map to the same slide, consolidate into one `teaching_notes` string.
 
 ### Step 3 — Regenerate deck
 
-After updating `curriculum.slides`, re-run the slidev-builder phase to regenerate `./slidev/slides.md`.
+After updating `curriculum.slides`, re-run the slidev-builder phase to regenerate `./onboarding/slidev/slides.md`.
 
 Do not regenerate the quiz. The quiz stays unchanged so the developer retakes the same questions.
 
@@ -42,7 +42,7 @@ Updated `onboarding-session.json` with `teaching_notes` populated on affected sl
 Print:
 ```
 {n} slide(s) updated with teaching notes.
-Deck regenerated. Run: cd slidev && npm run dev
+Deck regenerated. Run: cd onboarding/slidev && npm run dev
 ```
 
 ## Iteration limit

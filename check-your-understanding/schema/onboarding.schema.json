@@ -1,0 +1,174 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OnboardingSession",
+  "description": "Complete state for one developer onboarding session. Written progressively; any field may be absent while the pipeline is mid-run.",
+  "type": "object",
+  "properties": {
+
+    "repo_context": {
+      "description": "Output of the understand-repo phase.",
+      "type": "object",
+      "properties": {
+        "generated_at":  { "type": "string", "format": "date-time" },
+        "source_path":   { "type": "string", "description": "Absolute path of the repo that was analysed." },
+        "coverage": {
+          "type": "object",
+          "description": "One boolean per coverage-checklist area. true = evidence found, false = gap.",
+          "properties": {
+            "project":       { "type": "boolean" },
+            "entry_points":  { "type": "boolean" },
+            "architecture":  { "type": "boolean" },
+            "runtime_flows": { "type": "boolean" },
+            "interfaces":    { "type": "boolean" },
+            "data":          { "type": "boolean" },
+            "frontend":      { "type": "boolean" },
+            "backend":       { "type": "boolean" },
+            "infra":         { "type": "boolean" },
+            "testing":       { "type": "boolean" },
+            "workflow":      { "type": "boolean" },
+            "conventions":   { "type": "boolean" },
+            "hotspots":      { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "summary":   { "type": "string" },
+        "tech_tags": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["generated_at", "source_path", "coverage", "summary", "tech_tags"]
+    },
+
+    "user_data": {
+      "description": "Answers collected during the questionnaire phase. Also written to onboarding/user_data.json.",
+      "type": "object",
+      "properties": {
+        "collected_at": { "type": "string", "format": "date-time" },
+        "identity": {
+          "type": "object",
+          "properties": {
+            "name":             { "type": "string" },
+            "years_experience": { "type": "integer", "minimum": 0 },
+            "role":             { "type": "string", "enum": ["junior", "mid", "senior", "lead", "other"] }
+          }
+        },
+        "tech_familiarity": {
+          "type": "object",
+          "description": "Keyed by tech_tag. Values: 0 (none) through 3 (expert).",
+          "additionalProperties": { "type": "integer", "minimum": 0, "maximum": 3 }
+        },
+        "task_context": {
+          "type": "object",
+          "properties": {
+            "has_ticket":     { "type": "boolean" },
+            "ticket_ref":     { "type": "string" },
+            "ticket_summary": { "type": "string" },
+            "goal":           { "type": "string", "description": "One-sentence description of what they need to accomplish." }
+          },
+          "required": ["goal"]
+        },
+        "preferred_style": {
+          "type": "string",
+          "enum": ["bottom-up", "top-down", "example-first", "concept-first"]
+        }
+      },
+      "required": ["collected_at"]
+    },
+
+    "curriculum": {
+      "description": "Output of the teaching-synthesis phase.",
+      "type": "object",
+      "properties": {
+        "generated_at": { "type": "string", "format": "date-time" },
+        "slides": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id":             { "type": "string" },
+              "title":          { "type": "string" },
+              "layout":         { "type": "string", "enum": ["cover", "default", "center", "two-cols", "section", "image-right", "iframe-right"] },
+              "content":        { "type": "string" },
+              "notes":          { "type": "string", "description": "Speaker / analogy notes written by teaching-synthesis." },
+              "teaching_notes": { "type": "string", "description": "Remediation notes appended by iterate-on-failure when the developer failed a question linked to this slide." }
+            },
+            "required": ["id", "title", "layout", "content"]
+          }
+        },
+        "guide": {
+          "description": "Quick-reference panel shown alongside the quiz. 6 tabs always present; a 7th Key Concepts tab is added for junior developers or when any relevant tech_familiarity is 0.",
+          "type": "object",
+          "properties": {
+            "title": { "type": "string" },
+            "intro": { "type": "string" },
+            "tabs": {
+              "type": "array",
+              "minItems": 6,
+              "maxItems": 7,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "enum": ["setup", "first-tasks", "architecture", "patterns", "test-debug", "reference", "key-concepts"],
+                    "description": "key-concepts tab is only present when identity.role == junior or any relevant tech_familiarity == 0."
+                  },
+                  "label":   { "type": "string" },
+                  "content": { "type": "string", "description": "Markdown. Max 80 words, max 4 bullets — except key-concepts which holds 1-2 sentence definitions." }
+                },
+                "required": ["id", "label", "content"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": ["title", "tabs"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["generated_at", "slides"]
+    },
+
+    "quiz": {
+      "description": "The single check-your-understanding quiz. Generated once; never regenerated.",
+      "type": "object",
+      "properties": {
+        "generated_at":   { "type": "string", "format": "date-time" },
+        "pass_threshold": { "type": "number", "minimum": 0, "maximum": 1 },
+        "questions": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id":        { "type": "string" },
+              "type":      { "type": "string", "enum": ["multiple-choice", "scenario", "where-would-you-change", "ordering", "flow-completion", "dependency-reasoning"] },
+              "prompt":    { "type": "string" },
+              "options":   { "type": "array", "items": { "type": "string" }, "description": "Required for multiple-choice." },
+              "answer":    { "type": "string" },
+              "rationale": { "type": "string" },
+              "slide_ref": { "type": "string", "description": "id of the slide this question tests." }
+            },
+            "required": ["id", "type", "prompt", "answer", "rationale", "slide_ref"]
+          }
+        }
+      },
+      "required": ["generated_at", "questions", "pass_threshold"]
+    },
+
+    "quiz_result": {
+      "description": "Written by Phase 6 after the developer completes the quiz. Updated on each retry.",
+      "type": "object",
+      "properties": {
+        "completed_at":        { "type": "string", "format": "date-time" },
+        "score":               { "type": "number", "minimum": 0, "maximum": 1, "description": "Fraction of questions answered correctly." },
+        "passed":              { "type": "boolean" },
+        "failed_question_ids": { "type": "array", "items": { "type": "string" }, "description": "ids of questions answered incorrectly." },
+        "iteration":           { "type": "integer", "minimum": 1, "description": "Which attempt this result belongs to (1 = first try)." }
+      },
+      "required": ["completed_at", "score", "passed", "failed_question_ids", "iteration"]
+    }
+
+  },
+  "additionalProperties": false
+}

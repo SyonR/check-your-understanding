@@ -1,13 +1,13 @@
 
 # slidev-builder
 
-Takes `curriculum.slides` + `quiz.questions` and writes a self-contained Slidev presentation to `./slidev/`. The directory is the deliverable; the developer opens it with `npx slidev`.
+Takes `curriculum.slides` + `quiz.questions` and writes a self-contained Slidev presentation to `./onboarding/slidev/`. The directory is the deliverable; the developer opens it with `npx slidev`.
 
 ## Output directory structure
 
 ```
-slidev/
-  slides.md          <- the complete presentation (curriculum + quiz slide)
+onboarding/slidev/
+  slides.md          <- the complete presentation (curriculum + quiz slides)
   package.json       <- minimal Slidev dependency
   components/
     QuizQuestion.vue <- reusable multiple-choice quiz component
@@ -29,12 +29,13 @@ highlighter: shiki
 ---
 ```
 
-Then one `---`-delimited section per slide, setting `layout:` from `curriculum.slides[i].layout` and writing the slide's `content` as Markdown below it. Speaker notes go in `<!-- ... -->` directly after the content. If `teaching_notes` is present, append it to the notes block prefixed with `> Teaching note:`.
+Then one `---`-delimited section per slide, setting `layout:` from `curriculum.slides[i].layout` and writing the slide's `content` as Markdown below it. Speaker notes go in `<!-- ... -->` directly after the content. If a slide has a `notes` field (written by the teaching-synthesis phase), put it in the `<!-- ... -->` block. If a slide also has a `teaching_notes` field (written by the iterate-on-failure phase), append it to the same block prefixed with `> Teaching note:`.
 
-After all curriculum slides, append two more sections:
+After all curriculum slides, append the check-your-understanding quiz section:
 
 1. A `layout: section` slide titled `# Check Your Understanding`.
-2. A single slide that renders `<QuizQuestion>` for each question and `<QuizResult>` at the end.
+2. One slide per question that renders a `<QuizQuestion>` component (one question per slide prevents content overflow).
+3. A final `<QuizResult>` slide that shows the score once all questions have been answered.
 
 ## Slide rendering rules
 
@@ -45,7 +46,7 @@ After all curriculum slides, append two more sections:
 
 ## QuizQuestion.vue
 
-Write once to `./slidev/components/QuizQuestion.vue`. It must:
+Write once to `./onboarding/slidev/components/QuizQuestion.vue`. It must:
 - Display `prompt` as a heading
 - Render each option as a `<button>`
 - On click: disable all buttons; highlight correct answer green, chosen-wrong answer red
@@ -54,7 +55,7 @@ Write once to `./slidev/components/QuizQuestion.vue`. It must:
 
 ## QuizResult.vue
 
-Write once to `./slidev/components/QuizResult.vue`. It:
+Write once to `./onboarding/slidev/components/QuizResult.vue`. It:
 - Receives an array of `{ id, correct }` results
 - When `results.length == questions.length`: displays score and pass/fail state
 - On fail: lists the `slide_ref` for each failed question as "Review: {slide title}"
@@ -76,10 +77,18 @@ Write once to `./slidev/components/QuizResult.vue`. It:
 }
 ```
 
+## public/theme.css
+
+Write once to `./onboarding/slidev/public/theme.css`. Do not overwrite on regeneration if the file already exists.
+
+```css
+/* Custom theme overrides — edit freely */
+```
+
 ## Post-generation instruction
 
 After writing all files, print:
 ```
-Slidev deck written to ./slidev/
-Run: cd slidev && npm install && npm run dev
+Slidev deck written to ./onboarding/slidev/
+Run: cd onboarding/slidev && npm install && npm run dev
 ```
