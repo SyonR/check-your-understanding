@@ -1,0 +1,54 @@
+/* Shared check-your-understanding Slidev theme */
+:root {
+  --slidev-theme-primary: #7c3aed;
+}
+
+.slidev-layout {
+  box-sizing: border-box;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.slidev-layout h1 {
+  color: #4c1d95;
+}
+
+.slidev-layout p,
+.slidev-layout li,
+.slidev-layout td,
+.slidev-layout th {
+  overflow-wrap: anywhere;
+}
+
+.slidev-layout pre,
+.slidev-layout .mermaid {
+  max-width: 100%;
+  overflow: auto;
+}
+
+.slidev-layout table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.slidev-layout table th {
+  background: #f5f3ff;
+  color: #4c1d95;
+}
+
+.slidev-layout .mermaid svg,
+.slidev-layout img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 700px), (max-height: 500px) {
+  .slidev-layout {
+    padding: 1.5rem 2rem;
+  }
+}

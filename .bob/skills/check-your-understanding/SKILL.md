@@ -2,8 +2,8 @@
 name: check-your-understanding
 description: >
   Onboard a developer onto a codebase: analyse the repo, interview the developer,
-  synthesise a personalised curriculum, generate a Slidev deck with a single
-  check-your-understanding quiz at the end, and iterate the deck on failure.
+  synthesise a personalised curriculum, generate an offline interactive HTML
+  learning module with a quiz, and iterate the module on failure.
   Triggers on: "onboard me", "check my understanding", "walk me through this repo",
   "generate onboarding slides".
 argument-hint: "Path to the repo to onboard onto (defaults to current directory)"
@@ -52,13 +52,13 @@ Done when `quiz.questions` has between 5 and 12 items, every question has a `sli
 
 > Phases 3 and 4 may run in parallel once Phase 2 is complete.
 
-## Phase 5 — Build Slidev deck
+## Phase 5 — Build offline learning module
 
 **Requires:** `curriculum.slides` + `quiz.questions`.
 
-Read [`references/slidev-builder.md`](references/slidev-builder.md) and write the complete Slidev presentation to `./slidev/`.
+Read [`references/html-builder.md`](references/html-builder.md) and run the deterministic builder. Never synthesize the HTML, CSS, JavaScript, quiz UI, or Mermaid runtime.
 
-Done when `./slidev/slides.md`, `./slidev/package.json`, `./slidev/components/QuizQuestion.vue`, and `./slidev/components/QuizResult.vue` all exist.
+Done when `./learning-module/index.html`, `./learning-module/assets/mermaid.min.js`, and `./learning-module/assets/MERMAID-LICENSE.txt` all exist.
 
 ## Phase 6 — Quiz and iterate
 
@@ -66,7 +66,7 @@ After the developer has viewed the deck and completed the quiz, read their answe
 
 If `quiz_result.passed == true`: print a congratulations message and stop.
 
-If `quiz_result.passed == false`: read [`references/iterate-on-failure.md`](references/iterate-on-failure.md) and update the failing slides with `teaching_notes`, then regenerate the deck. Repeat up to 3 times.
+If `quiz_result.passed == false`: read [`references/iterate-on-failure.md`](references/iterate-on-failure.md) and update the failing slides with `teaching_notes`, then rebuild the module. Repeat up to 3 times.
 
 ## Output summary
 
@@ -74,7 +74,6 @@ If `quiz_result.passed == false`: read [`references/iterate-on-failure.md`](refe
 |---|---|
 | `onboarding-session.json` | All phases (progressive) |
 | `user_data.json` | Phase 2 |
-| `slidev/slides.md` | Phase 5, updated by Phase 6 |
-| `slidev/package.json` | Phase 5 (once) |
-| `slidev/components/QuizQuestion.vue` | Phase 5 (once) |
-| `slidev/components/QuizResult.vue` | Phase 5 (once) |
+| `learning-module/index.html` | Deterministically built from session data in Phase 5; rebuilt by Phase 6 |
+| `learning-module/assets/mermaid.min.js` | Copied from the pinned offline template by Phase 5 |
+| `learning-module/assets/MERMAID-LICENSE.txt` | Mermaid license copied by Phase 5 |

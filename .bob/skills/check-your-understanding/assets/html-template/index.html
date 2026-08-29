@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Developer Onboarding</title>
+  <style>
+    :root {
+      --accent: #6d28d9;
+      --accent-dark: #4c1d95;
+      --accent-soft: #f5f3ff;
+      --background: #f8fafc;
+      --surface: #ffffff;
+      --sidebar: #172033;
+      --sidebar-muted: #b8c2d6;
+      --sidebar-expanded: clamp(14rem, 20vw, 18rem);
+      --sidebar-collapsed: 4.5rem;
+      --text: #202938;
+      --muted: #667085;
+      --border: #d8dee8;
+      --success: #15803d;
+      --success-soft: #f0fdf4;
+      --danger: #b91c1c;
+      --danger-soft: #fef2f2;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--background);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      margin: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    body {
+      height: var(--app-height, 100vh);
+      height: var(--app-height, 100dvh);
+      overflow: hidden;
+    }
+
+    button { font: inherit; }
+
+    .skip-link {
+      position: fixed;
+      left: 1rem;
+      top: -4rem;
+      z-index: 20;
+      padding: 0.65rem 1rem;
+      border-radius: 0.5rem;
+      color: white;
+      background: var(--accent-dark);
+    }
+
+    .skip-link:focus { top: 1rem; }
+
+    .stage {
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding: 0;
+      overscroll-behavior: contain;
+      scrollbar-color: #a8b0bf transparent;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .learning-page {
+      width: 100%;
+      min-width: 0;
+      min-height: 100%;
+      margin: 0;
+      padding: clamp(1.5rem, 4vw, 4rem) clamp(1.25rem, 5vw, 5rem);
+      border: 0;
+      border-radius: 0;
+      background: var(--surface);
+      box-shadow: none;
+      overflow-wrap: anywhere;
+    }
+
+    .layout-cover,
+    .layout-center {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .layout-section {
+      padding-top: clamp(3rem, 12vh, 8rem);
+    }
+
+    h1,
+    h2,
+    h3 { color: var(--accent-dark); line-height: 1.2; }
+
+    h1 { margin: 0 0 1.25rem; font-size: clamp(2rem, 6vw, 4rem); }
+    h2 { margin: 1.5rem 0 0.75rem; font-size: clamp(1.35rem, 3vw, 2rem); }
+    h3 { margin: 1.25rem 0 0.65rem; font-size: clamp(1.1rem, 2vw, 1.4rem); }
+    p, li, td, th { font-size: clamp(0.98rem, 1.7vw, 1.15rem); line-height: 1.6; }
+
+    code {
+      padding: 0.12rem 0.32rem;
+      border-radius: 0.3rem;
+      background: #ede9fe;
+      color: #3b0764;
+      font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.9em;
+      overflow-wrap: anywhere;
+    }
+
+    pre {
+      max-width: 100%;
+      padding: 1rem;
+      overflow: auto;
+      border-radius: 0.65rem;
+      color: #e5e7eb;
+      background: #111827;
+      text-align: left;
+      white-space: pre;
+    }
+
+    pre code { padding: 0; color: inherit; background: transparent; }
+
+    blockquote {
+      margin: 1rem 0;
+      padding: 0.75rem 1rem;
+      border-left: 4px solid var(--accent);
+      border-radius: 0 0.5rem 0.5rem 0;
+      background: var(--accent-soft);
+    }
+
+    blockquote p { margin: 0; }
+
+    table {
+      display: block;
+      width: max-content;
+      max-width: 100%;
+      margin: 1rem 0;
+      overflow-x: auto;
+      border-collapse: collapse;
+    }
+
+    th,
+    td { padding: 0.6rem 0.8rem; border: 1px solid var(--border); text-align: left; }
+    th { color: var(--accent-dark); background: var(--accent-soft); }
+
+    .content-columns {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(1.5rem, 4vw, 3rem);
+    }
+
+    .mermaid {
+      max-width: 100%;
+      overflow: auto;
+      color: inherit;
+      background: transparent;
+      text-align: center;
+    }
+
+    .mermaid svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+
+    .teaching-note,
+    .speaker-note {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 0.65rem;
+      background: #fffbeb;
+    }
+
+    .speaker-note summary { cursor: pointer; font-weight: 650; }
+
+    .question-label {
+      margin: 0 0 0.6rem;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .question-prompt,
+    .options { min-width: 0; max-width: 100%; }
+
+    .options { display: grid; gap: 0.75rem; margin-top: 1.5rem; }
+
+    .option {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      padding: 0.85rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 0.65rem;
+      color: var(--text);
+      background: var(--surface);
+      text-align: left;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      cursor: pointer;
+    }
+
+    .option:hover:not(:disabled),
+    .option:focus-visible { border-color: var(--accent); background: var(--accent-soft); }
+    .option.correct { border-color: var(--success); color: var(--success); background: var(--success-soft); }
+    .option.wrong { border-color: var(--danger); color: var(--danger); background: var(--danger-soft); }
+    .option:disabled { cursor: default; opacity: 0.72; }
+    .option.correct:disabled,
+    .option.wrong:disabled { opacity: 1; }
+
+    .rationale {
+      margin-top: 1.25rem;
+      padding: 1rem;
+      border-left: 4px solid var(--accent);
+      border-radius: 0 0.65rem 0.65rem 0;
+      background: var(--accent-soft);
+    }
+
+    .score {
+      margin: 1rem 0;
+      color: var(--accent-dark);
+      font-size: clamp(2rem, 8vw, 5rem);
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .review-list { display: grid; gap: 0.6rem; padding: 0; list-style: none; }
+
+    .review-button,
+    .action-button {
+      padding: 0.65rem 1rem;
+      border: 1px solid var(--accent);
+      border-radius: 0.55rem;
+      color: white;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    .review-button { width: 100%; text-align: left; }
+    .review-button:hover,
+    .action-button:hover { background: var(--accent-dark); }
+
+    .counter { color: var(--muted); font-variant-numeric: tabular-nums; text-align: center; }
+
+    .app-shell {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: var(--sidebar-expanded) minmax(0, 1fr);
+      overflow: hidden;
+      transition: grid-template-columns 180ms ease;
+    }
+
+    .sidebar {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      overflow: hidden;
+      color: white;
+      background: var(--sidebar);
+      border-right: 1px solid #2d3a51;
+    }
+
+    .navigation-toggle,
+    .nav-arrow {
+      width: 2.5rem;
+      height: 2.5rem;
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+      padding: 0;
+      border: 1px solid #526078;
+      border-radius: 0.35rem;
+      color: white;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .navigation-toggle {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      z-index: 2;
+    }
+
+    .navigation-toggle:hover,
+    .nav-arrow:hover:not(:disabled),
+    .navigation-toggle:focus-visible,
+    .nav-arrow:focus-visible {
+      border-color: #c4b5fd;
+      background: #2b3650;
+    }
+
+    .page-navigation {
+      min-height: 0;
+      margin-top: 4rem;
+      padding: 0.75rem;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: none;
+    }
+
+    .page-navigation::-webkit-scrollbar { display: none; }
+
+    .page-link {
+      width: 100%;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 2rem minmax(0, 1fr);
+      align-items: center;
+      gap: 0.65rem;
+      margin: 0 0 0.3rem;
+      padding: 0.55rem;
+      border: 1px solid transparent;
+      border-radius: 0.4rem;
+      color: var(--sidebar-muted);
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .page-link:hover,
+    .page-link:focus-visible { color: white; background: #253149; }
+
+    .page-link.active {
+      border-color: #8b5cf6;
+      color: white;
+      background: #4c1d95;
+    }
+
+    .page-number {
+      width: 2rem;
+      height: 2rem;
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 2rem;
+      border: 1px solid transparent;
+      border-radius: 0.35rem;
+      color: inherit;
+      background: rgb(255 255 255 / 8%);
+      font-size: 0.78rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .page-label {
+      min-width: 0;
+      overflow: hidden;
+      font-size: 0.88rem;
+      line-height: 1.3;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sidebar-controls {
+      display: grid;
+      grid-template-columns: 2.5rem minmax(0, 1fr) 2.5rem;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem;
+      border-top: 1px solid #344158;
+    }
+
+    .sidebar-controls .counter { color: var(--sidebar-muted); font-size: 0.82rem; }
+    .nav-arrow:disabled { cursor: not-allowed; opacity: 0.35; }
+
+    .nav-collapsed .app-shell { grid-template-columns: var(--sidebar-collapsed) minmax(0, 1fr); }
+    .nav-collapsed .navigation-toggle { right: 50%; transform: translateX(50%); }
+    .nav-collapsed .page-navigation { padding-inline: 0.625rem; }
+    .nav-collapsed .page-label,
+    .nav-collapsed .sidebar-controls .counter { display: none; }
+    .nav-collapsed .page-link {
+      width: 2.75rem;
+      height: 2.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.4rem;
+      padding: 0;
+      border-color: transparent;
+      background: transparent;
+    }
+    .nav-collapsed .page-number {
+      width: 2.25rem;
+      height: 2.25rem;
+      flex-basis: 2.25rem;
+      margin: 0;
+    }
+    .nav-collapsed .page-link.active .page-number {
+      border-color: #a78bfa;
+      color: white;
+      background: #5b21b6;
+      box-shadow: 0 0 0 2px rgb(139 92 246 / 25%);
+    }
+    .nav-collapsed .sidebar-controls {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      padding-inline: 0.625rem;
+    }
+
+    .noscript {
+      margin: 2rem;
+      padding: 1rem;
+      border: 1px solid var(--danger);
+      background: var(--danger-soft);
+    }
+
+    @media (max-width: 900px) {
+      .app-shell { grid-template-columns: var(--sidebar-collapsed) minmax(0, 1fr); }
+      body:not(.nav-collapsed) .app-shell { grid-template-columns: min(18rem, 72vw) minmax(0, 1fr); }
+      .learning-page {
+        padding: clamp(1.25rem, 5vw, 2.25rem);
+      }
+      .question-prompt,
+      .option { word-break: break-word; }
+      .content-columns { grid-template-columns: 1fr; gap: 0.5rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#stage">Skip to lesson content</a>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Learning module navigation">
+      <button class="navigation-toggle" id="navigation-toggle" type="button" aria-controls="page-navigation" aria-expanded="true" title="Collapse navigation">&lt;</button>
+      <nav class="page-navigation" id="page-navigation" aria-label="Pages"></nav>
+      <footer class="sidebar-controls">
+        <button class="nav-arrow" id="previous" type="button" aria-label="Previous page" title="Previous page">&lt;</button>
+        <span class="counter" id="counter"></span>
+        <button class="nav-arrow" id="next" type="button" aria-label="Next page" title="Next page">&gt;</button>
+      </footer>
+    </aside>
+    <main class="stage" id="stage" tabindex="-1" aria-live="polite"></main>
+  </div>
+
+  <noscript><p class="noscript">JavaScript is required for navigation, quizzes, and diagrams in this learning module.</p></noscript>
+
+  <script type="application/json" id="module-data">__MODULE_DATA_JSON__</script>
+  <script src="./assets/mermaid.min.js"></script>
+  <script>
+    (() => {
+      'use strict'
+
+      const data = JSON.parse(document.getElementById('module-data').textContent)
+      const curriculum = Array.isArray(data.curriculum?.slides) ? data.curriculum.slides : []
+      const questions = Array.isArray(data.quiz?.questions) ? data.quiz.questions : []
+      const threshold = Number(data.quiz?.pass_threshold ?? 0.8)
+      const answers = new Map()
+      const slideTitles = new Map(curriculum.map(slide => [slide.id, slide.title]))
+
+      const views = [
+        ...curriculum.map(slide => ({ kind: 'lesson', key: `lesson-${slide.id}`, slide })),
+        ...questions.map((question, index) => ({ kind: 'question', key: `question-${question.id}`, question, index })),
+        { kind: 'result', key: 'quiz-result' },
+      ]
+
+      const stage = document.getElementById('stage')
+      const previousButton = document.getElementById('previous')
+      const nextButton = document.getElementById('next')
+      const counter = document.getElementById('counter')
+      const pageNavigation = document.getElementById('page-navigation')
+      const navigationToggle = document.getElementById('navigation-toggle')
+      let mermaidInitialized = false
+      let compactViewport = false
+
+      document.title = data.title || 'Developer Onboarding'
+
+      const requestedKey = decodeURIComponent(location.hash.slice(1))
+      let currentIndex = Math.max(0, views.findIndex(view => view.key === requestedKey))
+
+      function viewTitle(view) {
+        if (view.kind === 'lesson') return view.slide.title || 'Lesson'
+        if (view.kind === 'question') return `Question ${view.index + 1}`
+        return 'Quiz results'
+      }
+
+      function renderPageNavigation() {
+        pageNavigation.innerHTML = views.map((view, index) => `
+          <button class="page-link" type="button" data-page-index="${index}" title="${escapeHtml(viewTitle(view))}">
+            <span class="page-number">${index + 1}</span>
+            <span class="page-label">${escapeHtml(viewTitle(view))}</span>
+          </button>
+        `).join('')
+      }
+
+      function setNavigationCollapsed(collapsed) {
+        document.body.classList.toggle('nav-collapsed', collapsed)
+        navigationToggle.textContent = collapsed ? '>' : '<'
+        navigationToggle.setAttribute('aria-expanded', String(!collapsed))
+        navigationToggle.title = collapsed ? 'Expand navigation' : 'Collapse navigation'
+      }
+
+      function syncViewport() {
+        const viewport = window.visualViewport
+        const width = viewport?.width || window.innerWidth
+        const height = viewport?.height || window.innerHeight
+        document.documentElement.style.setProperty('--app-height', `${Math.round(height)}px`)
+        const isCompact = width <= 900
+        if (isCompact !== compactViewport) {
+          compactViewport = isCompact
+          setNavigationCollapsed(isCompact)
+        }
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? '')
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#39;')
+      }
+
+      function inlineMarkdown(value) {
+        const codeTokens = []
+        let output = escapeHtml(value).replace(/`([^`]+)`/g, (_, code) => {
+          const token = `@@CODE${codeTokens.length}@@`
+          codeTokens.push(`<code>${code}</code>`)
+          return token
+        })
+
+        output = output
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          .replace(/__([^_]+)__/g, '<strong>$1</strong>')
+          .replace(/(^|[\s(])\*([^*]+)\*/g, '$1<em>$2</em>')
+          .replace(/(^|[\s(])_([^_]+)_/g, '$1<em>$2</em>')
+
+        return output.replace(/@@CODE(\d+)@@/g, (_, index) => codeTokens[Number(index)])
+      }
+
+      function splitTableRow(line) {
+        return line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(cell => cell.trim())
+      }
+
+      function markdown(source) {
+        const lines = String(source ?? '').replace(/\r\n?/g, '\n').split('\n')
+        const output = []
+        let index = 0
+        let columnsOpen = false
+
+        const isTableSeparator = line => /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(line)
+        const isBlockStart = position => {
+          const line = lines[position] ?? ''
+          const next = lines[position + 1] ?? ''
+          return !line.trim()
+            || /^```/.test(line)
+            || /^#{1,6}\s+/.test(line)
+            || /^>\s?/.test(line)
+            || /^\s*[-*+]\s+/.test(line)
+            || /^\s*\d+\.\s+/.test(line)
+            || /^::(left|right)::$/.test(line.trim())
+            || (line.includes('|') && isTableSeparator(next))
+        }
+
+        while (index < lines.length) {
+          const line = lines[index]
+          const trimmed = line.trim()
+
+          if (!trimmed) { index += 1; continue }
+
+          if (trimmed === '::left::') {
+            if (!columnsOpen) {
+              output.push('<div class="content-columns"><div>')
+              columnsOpen = true
+            }
+            index += 1
+            continue
+          }
+
+          if (trimmed === '::right::') {
+            if (!columnsOpen) output.push('<div class="content-columns"><div>')
+            output.push('</div><div>')
+            columnsOpen = true
+            index += 1
+            continue
+          }
+
+          const fence = line.match(/^```([\w-]*)\s*$/)
+          if (fence) {
+            const language = fence[1]
+            const code = []
+            index += 1
+            while (index < lines.length && !/^```\s*$/.test(lines[index])) {
+              code.push(lines[index])
+              index += 1
+            }
+            index += 1
+            if (language === 'mermaid') {
+              output.push(`<pre class="mermaid">${escapeHtml(code.join('\n'))}</pre>`)
+            } else {
+              output.push(`<pre><code class="language-${escapeHtml(language)}">${escapeHtml(code.join('\n'))}</code></pre>`)
+            }
+            continue
+          }
+
+          const heading = line.match(/^(#{1,6})\s+(.+)$/)
+          if (heading) {
+            const level = heading[1].length
+            output.push(`<h${level}>${inlineMarkdown(heading[2])}</h${level}>`)
+            index += 1
+            continue
+          }
+
+          if (line.includes('|') && isTableSeparator(lines[index + 1] ?? '')) {
+            const headers = splitTableRow(line)
+            const rows = []
+            index += 2
+            while (index < lines.length && lines[index].includes('|') && lines[index].trim()) {
+              rows.push(splitTableRow(lines[index]))
+              index += 1
+            }
+            output.push('<table><thead><tr>')
+            headers.forEach(header => output.push(`<th>${inlineMarkdown(header)}</th>`))
+            output.push('</tr></thead><tbody>')
+            rows.forEach(row => {
+              output.push('<tr>')
+              row.forEach(cell => output.push(`<td>${inlineMarkdown(cell)}</td>`))
+              output.push('</tr>')
+            })
+            output.push('</tbody></table>')
+            continue
+          }
+
+          if (/^>\s?/.test(line)) {
+            const quote = []
+            while (index < lines.length && /^>\s?/.test(lines[index])) {
+              quote.push(lines[index].replace(/^>\s?/, ''))
+              index += 1
+            }
+            output.push(`<blockquote><p>${inlineMarkdown(quote.join(' '))}</p></blockquote>`)
+            continue
+          }
+
+          const unordered = line.match(/^\s*[-*+]\s+(.+)$/)
+          const ordered = line.match(/^\s*\d+\.\s+(.+)$/)
+          if (unordered || ordered) {
+            const listTag = ordered ? 'ol' : 'ul'
+            const pattern = ordered ? /^\s*\d+\.\s+(.+)$/ : /^\s*[-*+]\s+(.+)$/
+            output.push(`<${listTag}>`)
+            while (index < lines.length) {
+              const item = lines[index].match(pattern)
+              if (!item) break
+              output.push(`<li>${inlineMarkdown(item[1])}</li>`)
+              index += 1
+            }
+            output.push(`</${listTag}>`)
+            continue
+          }
+
+          const paragraph = [line]
+          index += 1
+          while (index < lines.length && !isBlockStart(index)) {
+            paragraph.push(lines[index])
+            index += 1
+          }
+          output.push(`<p>${inlineMarkdown(paragraph.join(' '))}</p>`)
+        }
+
+        if (columnsOpen) output.push('</div></div>')
+        return output.join('')
+      }
+
+      function safeLayout(layout) {
+        return ['cover', 'section', 'default', 'center', 'two-cols', 'image-right', 'iframe-right'].includes(layout)
+          ? layout
+          : 'default'
+      }
+
+      function renderLesson(slide) {
+        const teachingNote = slide.teaching_notes
+          ? `<aside class="teaching-note"><strong>Teaching note</strong>${markdown(slide.teaching_notes)}</aside>`
+          : ''
+        const speakerNote = slide.notes
+          ? `<details class="speaker-note"><summary>Additional context</summary>${markdown(slide.notes)}</details>`
+          : ''
+        return `<article class="learning-page layout-${safeLayout(slide.layout)}">${markdown(slide.content)}${teachingNote}${speakerNote}</article>`
+      }
+
+      function renderQuestion(question, questionIndex) {
+        const selected = answers.get(question.id)
+        const answered = selected !== undefined
+        const options = (question.options || []).map((option, optionIndex) => {
+          let state = ''
+          if (answered && option === question.answer) state = ' correct'
+          else if (answered && option === selected) state = ' wrong'
+          return `<button class="option${state}" type="button" data-question="${escapeHtml(question.id)}" data-option="${optionIndex}" ${answered ? 'disabled' : ''}>${inlineMarkdown(option)}</button>`
+        }).join('')
+
+        const rationale = answered
+          ? `<div class="rationale"><strong>${selected === question.answer ? 'Correct.' : 'Incorrect.'}</strong>${markdown(question.rationale)}</div>`
+          : ''
+
+        return `<article class="learning-page quiz-page">
+          <p class="question-label">Question ${questionIndex + 1} of ${questions.length}</p>
+          <div class="question-prompt">${markdown(question.prompt)}</div>
+          <div class="options">${options}</div>
+          ${rationale}
+        </article>`
+      }
+
+      function renderResult() {
+        const completed = answers.size === questions.length
+        const correct = questions.filter(question => answers.get(question.id) === question.answer).length
+        const score = questions.length ? correct / questions.length : 0
+        const percentage = Math.round(score * 100)
+        const passed = completed && score >= threshold
+        const firstUnanswered = questions.find(question => !answers.has(question.id))
+
+        if (!completed) {
+          return `<article class="learning-page layout-section">
+            <h1>Quiz incomplete</h1>
+            <p>You answered ${answers.size} of ${questions.length} questions.</p>
+            <p><button class="action-button" type="button" data-unanswered="${escapeHtml(firstUnanswered?.id || '')}">Continue quiz</button></p>
+          </article>`
+        }
+
+        const failed = questions.filter(question => answers.get(question.id) !== question.answer)
+        const reviews = failed.map(question => {
+          const title = slideTitles.get(question.slide_ref) || question.slide_ref || question.id
+          return `<li><button class="review-button" type="button" data-review="${escapeHtml(question.slide_ref || '')}">Review: ${escapeHtml(title)}</button></li>`
+        }).join('')
+
+        return `<article class="learning-page">
+          <h1>${passed ? 'You passed!' : 'Review and try again'}</h1>
+          <div class="score">${correct} / ${questions.length}</div>
+          <p style="text-align:center">Score: ${percentage}% · Pass threshold: ${Math.round(threshold * 100)}%</p>
+          ${reviews ? `<h2>Recommended review</h2><ul class="review-list">${reviews}</ul>` : '<p style="text-align:center">You answered every question correctly.</p>'}
+          <p style="text-align:center"><button class="action-button" type="button" data-retake>Retake quiz</button></p>
+        </article>`
+      }
+
+      async function renderMermaid() {
+        const nodes = stage.querySelectorAll('.mermaid')
+        if (!nodes.length || !globalThis.mermaid) return
+        if (!mermaidInitialized) {
+          mermaid.initialize({
+            startOnLoad: false,
+            securityLevel: 'strict',
+            theme: 'neutral',
+            flowchart: { useMaxWidth: true },
+            sequence: { useMaxWidth: true },
+          })
+          mermaidInitialized = true
+        }
+        try {
+          await mermaid.run({ nodes, suppressErrors: false })
+        } catch (error) {
+          console.error('Unable to render Mermaid diagram', error)
+        }
+      }
+
+      function updateChrome() {
+        const total = Math.max(views.length, 1)
+        previousButton.disabled = currentIndex === 0
+        nextButton.disabled = currentIndex === views.length - 1
+        counter.textContent = `${currentIndex + 1} / ${total}`
+        pageNavigation.querySelectorAll('.page-link').forEach((link, index) => {
+          const active = index === currentIndex
+          link.classList.toggle('active', active)
+          if (active) {
+            link.setAttribute('aria-current', 'page')
+            const linkTop = link.offsetTop
+            const linkBottom = linkTop + link.offsetHeight
+            if (linkTop < pageNavigation.scrollTop) pageNavigation.scrollTop = linkTop
+            else if (linkBottom > pageNavigation.scrollTop + pageNavigation.clientHeight) {
+              pageNavigation.scrollTop = linkBottom - pageNavigation.clientHeight
+            }
+          } else {
+            link.removeAttribute('aria-current')
+          }
+        })
+      }
+
+      function render() {
+        const view = views[currentIndex]
+        if (!view) {
+          stage.innerHTML = '<article class="learning-page"><h1>No learning content found</h1></article>'
+          updateChrome()
+          return
+        }
+
+        if (view.kind === 'lesson') stage.innerHTML = renderLesson(view.slide)
+        else if (view.kind === 'question') stage.innerHTML = renderQuestion(view.question, view.index)
+        else stage.innerHTML = renderResult()
+
+        history.replaceState(null, '', `#${encodeURIComponent(view.key)}`)
+        stage.scrollTop = 0
+        updateChrome()
+        renderMermaid()
+      }
+
+      function goTo(index, moveFocus = true) {
+        currentIndex = Math.min(Math.max(index, 0), views.length - 1)
+        render()
+        if (moveFocus) stage.focus({ preventScroll: true })
+      }
+
+      previousButton.addEventListener('click', () => goTo(currentIndex - 1))
+      nextButton.addEventListener('click', () => goTo(currentIndex + 1))
+      navigationToggle.addEventListener('click', () => {
+        setNavigationCollapsed(!document.body.classList.contains('nav-collapsed'))
+      })
+
+      pageNavigation.addEventListener('click', event => {
+        const pageButton = event.target.closest('[data-page-index]')
+        if (!pageButton) return
+        goTo(Number(pageButton.dataset.pageIndex))
+      })
+
+      stage.addEventListener('click', event => {
+        const optionButton = event.target.closest('[data-question][data-option]')
+        if (optionButton) {
+          const question = questions.find(item => item.id === optionButton.dataset.question)
+          const option = question?.options?.[Number(optionButton.dataset.option)]
+          if (question && option !== undefined && !answers.has(question.id)) {
+            answers.set(question.id, option)
+            render()
+          }
+          return
+        }
+
+        const reviewButton = event.target.closest('[data-review]')
+        if (reviewButton) {
+          const targetIndex = views.findIndex(view => view.kind === 'lesson' && view.slide.id === reviewButton.dataset.review)
+          if (targetIndex >= 0) goTo(targetIndex)
+          return
+        }
+
+        const unansweredButton = event.target.closest('[data-unanswered]')
+        if (unansweredButton) {
+          const targetIndex = views.findIndex(view => view.kind === 'question' && view.question.id === unansweredButton.dataset.unanswered)
+          if (targetIndex >= 0) goTo(targetIndex)
+          return
+        }
+
+        if (event.target.closest('[data-retake]')) {
+          answers.clear()
+          const firstQuestionIndex = views.findIndex(view => view.kind === 'question')
+          goTo(firstQuestionIndex >= 0 ? firstQuestionIndex : 0)
+        }
+      })
+
+      document.addEventListener('keydown', event => {
+        if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return
+        if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+          event.preventDefault()
+          goTo(currentIndex - 1)
+        } else if (event.key === 'ArrowRight' || event.key === 'PageDown') {
+          event.preventDefault()
+          goTo(currentIndex + 1)
+        }
+      })
+
+      window.addEventListener('hashchange', () => {
+        const key = decodeURIComponent(location.hash.slice(1))
+        const index = views.findIndex(view => view.key === key)
+        if (index >= 0 && index !== currentIndex) goTo(index, false)
+      })
+
+      window.addEventListener('resize', syncViewport)
+      window.visualViewport?.addEventListener('resize', syncViewport)
+      window.visualViewport?.addEventListener('scroll', syncViewport)
+
+      renderPageNavigation()
+      syncViewport()
+      render()
+    })()
+  </script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # teaching-synthesis
 
-Takes `repo_context` + `user_data` and produces `curriculum.slides` — the ordered list of slide specs that form the Slidev deck. This is the only phase that decides _what_ to teach, _in what order_, and _at what depth_.
+Takes `repo_context` + `user_data` and produces `curriculum.slides` — the ordered lesson specs that form the interactive learning module. This is the only phase that decides _what_ to teach, _in what order_, and _at what depth_.
 
 ## Inputs
 
@@ -88,4 +88,4 @@ Populate `curriculum` in `onboarding-session.json`:
 }
 ```
 
-Each slide's `content` is valid Slidev Markdown (GitHub-flavoured + Mermaid). The `layout` field must be one of: `cover`, `default`, `center`, `two-cols`, `section`, `image-right`, `iframe-right`.
+Each lesson's `content` uses the Markdown subset documented in [`html-builder.md`](html-builder.md), including Mermaid fenced blocks. The `layout` field must be one of: `cover`, `default`, `center`, `two-cols`, `section`.

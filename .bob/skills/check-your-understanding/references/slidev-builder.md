@@ -1,19 +1,28 @@
 
 # slidev-builder
 
-Takes `curriculum.slides` + `quiz.questions` and writes a self-contained Slidev presentation to `./slidev/`. The directory is the deliverable; the developer opens it with `npx slidev`.
+Takes `curriculum.slides` + `quiz.questions` and writes a self-contained Slidev presentation to `./slidev/`. Static layout files are copied from maintained skill assets; only `slides.md` is generated for the session.
+
+## Install the reusable template
+
+Run `scripts/install_slidev_template.py` from the directory containing the skill's `SKILL.md`, passing the session's `./slidev` directory:
+
+```sh
+python scripts/install_slidev_template.py ./slidev
+```
+
+If the current working directory is elsewhere, invoke the script by its full path. Do not read, synthesize, or rewrite the template files during generation. To change the layout for all future sessions, edit `assets/slidev-template/`. Rerun the installer to synchronize an existing session. The installer never touches `slides.md` or `package-lock.json`.
 
 ## Output directory structure
 
 ```
 slidev/
   slides.md          <- the complete presentation (curriculum + quiz slide)
-  package.json       <- minimal Slidev dependency
+  package.json       <- copied from the skill template
+  style.css          <- copied global responsive and overflow styles
   components/
-    QuizQuestion.vue <- reusable multiple-choice quiz component
-    QuizResult.vue   <- pass/fail result display
-  public/
-    theme.css        <- custom CSS overrides (generated once, not overwritten on regeneration)
+    QuizQuestion.vue <- copied from the skill template
+    QuizResult.vue   <- copied from the skill template
 ```
 
 ## slides.md format
@@ -42,51 +51,14 @@ After all curriculum slides, append two more sections:
 - `two-cols` layout uses the Slidev `::right::` separator to split left and right columns.
 - Code blocks use fenced triple-backtick with a language identifier (`ts`, `tsx`, `sh`, `json`, `yaml`).
 - Mermaid diagrams use fenced triple-backtick with `mermaid`.
+- Slidev uses a fixed 16:9 canvas and scales it to the viewport. Keep each slide focused on one main idea; split dense material across slides rather than depending on scrolling for normal reading.
+- The shared theme provides vertical overflow scrolling as a safety net on every layout and horizontal scrolling for wide tables, code, and Mermaid diagrams. Do not override those overflow rules in generated slides.
 
-## QuizQuestion.vue
+## Static template files
 
-Write once to `./slidev/components/QuizQuestion.vue`. It must:
-- Display `prompt` as a heading
-- Render each option as a `<button>`
-- On click: disable all buttons; highlight correct answer green, chosen-wrong answer red
-- Show `rationale` text after an answer is chosen
-- Emit `answered` event with `{ id, correct: boolean }`
-- Include global CSS that makes any slide containing a quiz question vertically scrollable:
+`QuizQuestion.vue`, `QuizResult.vue`, `style.css`, and `package.json` are maintained under `assets/slidev-template/`. The installer copies them byte-for-byte. Bob must not recreate their implementation from prose.
 
-  ```vue
-  <style scoped>
-  .quiz-btn:disabled {
-    pointer-events: none;
-  }
-
-  :global(.slidev-layout:has(.quiz-question)) {
-    overflow-y: auto;
-  }
-  </style>
-
-## QuizResult.vue
-
-Write once to `./slidev/components/QuizResult.vue`. It:
-- Receives an array of `{ id, correct }` results
-- When `results.length == questions.length`: displays score and pass/fail state
-- On fail: lists the `slide_ref` for each failed question as "Review: {slide title}"
-
-## package.json
-
-```json
-{
-  "name": "onboarding-slides",
-  "private": true,
-  "scripts": {
-    "dev": "slidev slides.md --open",
-    "build": "slidev build slides.md"
-  },
-  "dependencies": {
-    "@slidev/cli": "^0.49.0",
-    "@slidev/theme-default": "latest"
-  }
-}
-```
+On the generated quiz slide, include each question's `slide_ref` in the stored result passed to `QuizResult`, along with `id` and `correct`.
 
 ## Post-generation instruction
 

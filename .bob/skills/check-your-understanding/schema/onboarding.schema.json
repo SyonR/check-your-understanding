@@ -99,7 +99,7 @@
             "properties": {
               "id":       { "type": "string" },
               "title":    { "type": "string" },
-              "layout":   { "type": "string", "description": "Slidev layout name (e.g. 'default', 'two-cols', 'center', 'section')." },
+              "layout":   { "type": "string", "description": "Learning module layout name (e.g. 'default', 'two-cols', 'center', 'section')." },
               "content":  { "type": "string", "description": "Markdown body for this slide." },
               "notes":    { "type": "string", "description": "Speaker notes / teaching notes for this slide." },
               "teaching_notes": { "type": "string", "description": "Remediation notes written on quiz failure; appended by the iterate-on-failure phase." }
@@ -112,7 +112,7 @@
     },
 
     "quiz": {
-      "description": "The single check-your-understanding quiz appended to the Slidev deck.",
+      "description": "The single check-your-understanding quiz appended to the interactive learning module.",
       "type": "object",
       "properties": {
         "generated_at": { "type": "string", "format": "date-time" },

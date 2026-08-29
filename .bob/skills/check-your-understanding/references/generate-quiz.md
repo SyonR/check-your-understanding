@@ -1,6 +1,6 @@
 # generate-quiz
 
-Takes `repo_context` + `curriculum.slides` and produces the single `quiz` block. There is exactly one quiz per session; it lives at the end of the Slidev deck.
+Takes `repo_context` + `curriculum.slides` and produces the single `quiz` block. There is exactly one quiz per session; it lives at the end of the interactive learning module.
 
 ## Core test principle
 
