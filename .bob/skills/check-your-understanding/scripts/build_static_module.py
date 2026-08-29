@@ -11,6 +11,15 @@ from typing import Any
 
 
 DATA_MARKER = "__MODULE_DATA_JSON__"
+EXPECTED_GUIDE_TABS = [
+    ("setup", "Setup"),
+    ("first-tasks", "First Tasks"),
+    ("architecture", "Architecture"),
+    ("patterns", "Patterns"),
+    ("test-debug", "Test & Debug"),
+    ("reference", "Reference"),
+]
+GUIDE_FACT_CATEGORIES = ["setup", "first_tasks", "architecture", "patterns", "test_debug", "reference"]
 
 
 def require_object(value: Any, label: str) -> dict[str, Any]:
@@ -23,6 +32,50 @@ def require_list(value: Any, label: str) -> list[Any]:
     if not isinstance(value, list) or not value:
         raise ValueError(f"{label} must be a non-empty array")
     return value
+
+
+def validate_guide(value: Any) -> dict[str, Any]:
+    guide = require_object(value, "curriculum.guide")
+    tabs = require_list(guide.get("tabs"), "curriculum.guide.tabs")
+    if len(tabs) != len(EXPECTED_GUIDE_TABS):
+        raise ValueError(f"curriculum.guide.tabs must contain exactly {len(EXPECTED_GUIDE_TABS)} tabs")
+
+    for index, ((expected_id, expected_label), raw_tab) in enumerate(zip(EXPECTED_GUIDE_TABS, tabs)):
+        tab = require_object(raw_tab, f"curriculum.guide.tabs[{index}]")
+        if tab.get("id") != expected_id or tab.get("label") != expected_label:
+            raise ValueError(
+                f"curriculum.guide.tabs[{index}] must be {expected_id!r} / {expected_label!r}"
+            )
+        content = tab.get("content")
+        if not isinstance(content, str) or not content.strip():
+            raise ValueError(f"curriculum.guide.tabs[{index}].content must be non-empty text")
+        if len(content.split()) > 80:
+            raise ValueError(f"curriculum.guide.tabs[{index}].content must be 80 words or fewer")
+        bullet_count = sum(
+            1 for line in content.splitlines() if line.lstrip().startswith(("- ", "* "))
+        )
+        if bullet_count > 4:
+            raise ValueError(f"curriculum.guide.tabs[{index}].content must have at most four bullets")
+
+    return guide
+
+
+def validate_guide_facts(value: Any) -> None:
+    repo_context = require_object(value, "repo_context")
+    guide_facts = require_object(repo_context.get("guide_facts"), "repo_context.guide_facts")
+    for category in GUIDE_FACT_CATEGORIES:
+        facts = require_list(guide_facts.get(category), f"repo_context.guide_facts.{category}")
+        for index, raw_fact in enumerate(facts):
+            fact = require_object(raw_fact, f"repo_context.guide_facts.{category}[{index}]")
+            if not isinstance(fact.get("text"), str) or not fact["text"].strip():
+                raise ValueError(f"repo_context.guide_facts.{category}[{index}].text must be non-empty")
+            evidence = require_list(
+                fact.get("evidence"), f"repo_context.guide_facts.{category}[{index}].evidence"
+            )
+            if any(not isinstance(path, str) or not path.strip() for path in evidence):
+                raise ValueError(
+                    f"repo_context.guide_facts.{category}[{index}].evidence must contain non-empty paths"
+                )
 
 
 def infer_title(session: dict[str, Any], slides: list[Any]) -> str:
@@ -41,6 +94,7 @@ def build(session_path: Path, output_dir: Path) -> Path:
     template_assets = template_dir / "assets"
 
     session = require_object(json.loads(session_path.read_text(encoding="utf-8")), "session")
+    validate_guide_facts(session.get("repo_context"))
     curriculum = require_object(session.get("curriculum"), "curriculum")
     quiz = require_object(session.get("quiz"), "quiz")
     slides = require_list(curriculum.get("slides"), "curriculum.slides")
@@ -49,9 +103,12 @@ def build(session_path: Path, output_dir: Path) -> Path:
     if not template_path.is_file() or not template_assets.is_dir():
         raise FileNotFoundError(f"Offline HTML template is incomplete: {template_dir}")
 
+    guide = validate_guide(curriculum.get("guide"))
+    curriculum_payload: dict[str, Any] = {"slides": slides, "guide": guide}
+
     payload = {
         "title": infer_title(session, slides),
-        "curriculum": {"slides": slides},
+        "curriculum": curriculum_payload,
         "quiz": {
             "questions": questions,
             "pass_threshold": quiz.get("pass_threshold", 0.8),

@@ -4,6 +4,7 @@ Takes `repo_context` + `user_data` and produces `curriculum.slides` — the orde
 
 ## Inputs
 
+- `repo_context.guide_facts` — source-backed commands, paths, patterns, and warnings for the compact project guide
 - `repo_context.summary` — what the codebase is
 - `repo_context.tech_tags` — what technologies are in play
 - `user_data.tech_familiarity` — what the developer already knows
@@ -36,6 +37,20 @@ Build the slide list in this order:
 5. **Where you'll be working** (`layout: two-cols`) — files and directories side-by-side with descriptions
 6. **Key conventions** — only conventions that affect their work area
 7. **Quiz intro** (`layout: section`) — transitions to the check-your-understanding
+
+### Step 3a — Compact project guide
+
+Also produce `curriculum.guide`, a quick-reference subpage shown immediately before the quiz intro. Use exactly these short tabs: `Setup`, `First Tasks`, `Architecture`, `Patterns`, `Test & Debug`, and `Reference`.
+
+- Populate each tab only from its matching `repo_context.guide_facts` category: `setup`, `first_tasks`, `architecture`, `patterns`, `test_debug`, or `reference`.
+- Preserve commands, URLs, environment-variable names, and file paths exactly as recorded. When facts conflict, use the fact backed by executable code or configuration rather than prose documentation.
+- Every visible statement must be traceable to at least one fact's `evidence`. Evidence paths do not need to be displayed unless they are useful reference links.
+- If a required category is absent or empty, return to Phase 1 and collect only that category. Do not infer missing repository facts from general framework knowledge.
+- Keep each tab at 80 words or fewer and no more than four bullets.
+- Prefer commands, file paths, expected results, and project-specific warnings over general explanations.
+- Summarise existing research; do not add another teaching sequence or duplicate full slides.
+- Use lowercase kebab-case tab IDs.
+- If slides already exist and only the guide is missing, create the guide without rewriting the slides.
 
 ### Step 4 — Depth calibration
 
@@ -83,7 +98,43 @@ Populate `curriculum` in `onboarding-session.json`:
         "content": "...",
         "notes": "Analogy: ..."
       }
-    ]
+    ],
+    "guide": {
+      "title": "Project Guide",
+      "intro": "A compact reference for working in this repository.",
+      "tabs": [
+        {
+          "id": "setup",
+          "label": "Setup",
+          "content": "**Start:** `{repo command}`\n\n- **Verify:** {expected result}\n- **Tests:** `{test command}`"
+        },
+        {
+          "id": "first-tasks",
+          "label": "First Tasks",
+          "content": "- {small task and first file}\n- {next task and verification}"
+        },
+        {
+          "id": "architecture",
+          "label": "Architecture",
+          "content": "- {component flow}\n- {data or service boundary}"
+        },
+        {
+          "id": "patterns",
+          "label": "Patterns",
+          "content": "- {convention and canonical file}\n- {important anti-pattern}"
+        },
+        {
+          "id": "test-debug",
+          "label": "Test & Debug",
+          "content": "- **Test:** `{command}`\n- **First debug stop:** {log or tool}"
+        },
+        {
+          "id": "reference",
+          "label": "Reference",
+          "content": "- `{path}` — {purpose}\n- {project-specific warning or help location}"
+        }
+      ]
+    }
   }
 }
 ```

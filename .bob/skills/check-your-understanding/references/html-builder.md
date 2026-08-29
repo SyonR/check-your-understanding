@@ -1,6 +1,6 @@
 # offline HTML builder
 
-Builds a responsive, interactive learning module from `curriculum.slides` and `quiz.questions`. The learner opens the result directly from their filesystem; npm, Node, a web server, and internet access are not required.
+Builds a responsive, interactive learning module from `repo_context.guide_facts`, `curriculum.slides`, `curriculum.guide`, and `quiz.questions`. The learner opens the result directly from their filesystem; npm, Node, a web server, and internet access are not required.
 
 ## Build
 
@@ -10,7 +10,7 @@ Run the builder located under the directory containing this skill's `SKILL.md`:
 python scripts/build_static_module.py ./onboarding-session.json ./learning-module
 ```
 
-When the current working directory is elsewhere, invoke the script by its full path. Do not read or recreate the HTML shell in model output. The script validates the required session data, injects it into the maintained template, and copies the pinned Mermaid runtime and license.
+When the current working directory is elsewhere, invoke the script by its full path. Do not read or recreate the HTML shell in model output. The script validates the required session data—including all six evidence-backed guide-fact categories and the six compact rendered tabs—injects it into the maintained template, and copies the pinned Mermaid runtime and license.
 
 ## Output
 
@@ -22,7 +22,7 @@ learning-module/
     MERMAID-LICENSE.txt
 ```
 
-`index.html` contains all lesson rendering, navigation, responsive styling, quiz behavior, scoring, and review links. Its maintained shell uses the same restrained purple and neutral palette for every session, a full-viewport content area, and a collapsible numbered sidebar. The sidebar has no title/header, its scroll indicator stays hidden, and the lesson area has no top header or progress bar. Mermaid 11.17.2 is loaded from the adjacent local asset and renders `mermaid` fenced blocks offline with `securityLevel: strict`.
+`index.html` contains all lesson rendering, navigation, responsive styling, quiz behavior, scoring, review links, and the compact project-guide subpage from `curriculum.guide`. Its maintained shell uses the same restrained purple and neutral palette for every session, a full-viewport content area, and a collapsible numbered sidebar. The sidebar has no title/header, its scroll indicator stays hidden, and the lesson area has no top header or progress bar. Mermaid 11.17.2 is loaded from the adjacent local asset and renders `mermaid` fenced blocks offline with `securityLevel: strict`.
 
 The learner opens `learning-module/index.html` in a modern browser. Keep the entire directory together when sharing it.
 

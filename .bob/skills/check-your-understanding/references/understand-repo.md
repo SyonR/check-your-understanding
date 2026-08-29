@@ -14,6 +14,8 @@ Analyse the target repository and produce a `repo_context` block conforming to `
 
 **Stop when sufficient.** Coverage is done when every flag in the checklist below is `true`, or you have a documented reason the area does not apply (mark `true` for N/A areas).
 
+**Capture guide facts while evidence is open.** As commands, paths, boundaries, conventions, and warnings are verified, store them in `repo_context.guide_facts`. Every fact must cite at least one repository-relative evidence path. Preserve commands and file paths exactly; do not reconstruct them later from memory or framework conventions.
+
 ## Investigation order
 
 1. Top-level files: `README`, `package.json` / `pyproject.toml` / `Cargo.toml`, `Makefile`, `docker-compose.yml`, `.env.example`.
@@ -47,6 +49,21 @@ Mark each flag `true` when you have evidence. Mark `true` if the area does not a
 | `conventions` | Code style, linting, naming rules, PR process |
 | `hotspots` | Files with highest churn; complexity hot-spots |
 
+## Project-guide evidence
+
+Populate all six `guide_facts` categories during the same investigation. Keep each `text` concise and self-contained; keep no more than four facts per category except `reference`, which may contain six.
+
+| Category | Capture from the repository |
+|---|---|
+| `setup` | Prerequisites, install/start commands, ports or URLs, and a concrete success check |
+| `first_tasks` | Small safe changes, the first files to open, and how each change is verified |
+| `architecture` | Component boundaries, one important runtime flow, data ownership, and external integrations |
+| `patterns` | Enforced conventions, the canonical example path, and consequential anti-patterns |
+| `test_debug` | Exact test/lint/build commands, logs or debug entry points, and verified failure warnings |
+| `reference` | High-value files/directories and their one-line purpose |
+
+Prefer executable files and configuration over README claims when they conflict. Record missing information explicitly as `Not documented in the repository` and cite the files or locations checked; never invent a command, port, workflow, owner, or environment variable.
+
 ## Output
 
 Populate `repo_context` in `onboarding-session.json`:
@@ -58,7 +75,27 @@ Populate `repo_context` in `onboarding-session.json`:
     "source_path": "<absolute path>",
     "coverage": { "project": true, "entry_points": true, "..." : true },
     "summary": "<narrative>",
-    "tech_tags": ["react", "postgres", "docker"]
+    "tech_tags": ["react", "postgres", "docker"],
+    "guide_facts": {
+      "setup": [
+        { "text": "Run `./start.sh`; success exposes the UI at the documented local URL.", "evidence": ["README.md", "start.sh"] }
+      ],
+      "first_tasks": [
+        { "text": "For a small API change, begin in `src/services/example.py` and verify with `pytest`.", "evidence": ["src/services/example.py", "tests/test_example.py"] }
+      ],
+      "architecture": [
+        { "text": "The web client calls the API service, which owns database access.", "evidence": ["src/client/api.ts", "src/server/app.py"] }
+      ],
+      "patterns": [
+        { "text": "Keep transport handlers thin and place domain behavior in `src/services/`.", "evidence": ["src/server/app.py", "src/services/example.py"] }
+      ],
+      "test_debug": [
+        { "text": "Run `pytest`; inspect server logs first for request failures.", "evidence": ["pyproject.toml", "tests/test_example.py"] }
+      ],
+      "reference": [
+        { "text": "`src/server/app.py` — application entry point.", "evidence": ["src/server/app.py"] }
+      ]
+    }
   }
 }
 ```

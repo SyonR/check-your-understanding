@@ -2,6 +2,37 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "OnboardingSession",
   "description": "Complete state for one developer onboarding session. Written progressively; any field may be absent while the pipeline is mid-run.",
+  "definitions": {
+    "guideFact": {
+      "type": "object",
+      "properties": {
+        "text": { "type": "string", "minLength": 1 },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "required": ["text", "evidence"],
+      "additionalProperties": false
+    },
+    "guideFactList": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "items": { "$ref": "#/definitions/guideFact" }
+    },
+    "guideTab": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "enum": ["setup", "first-tasks", "architecture", "patterns", "test-debug", "reference"] },
+        "label": { "type": "string" },
+        "content": { "type": "string", "minLength": 1 }
+      },
+      "required": ["id", "label", "content"],
+      "additionalProperties": false
+    }
+  },
   "type": "object",
   "properties": {
 
@@ -39,9 +70,23 @@
           "type": "array",
           "description": "Normalised technology identifiers detected in the repo (e.g. 'react', 'postgres', 'redis', 'docker').",
           "items": { "type": "string" }
+        },
+        "guide_facts": {
+          "type": "object",
+          "description": "Concise project-guide facts captured from repository evidence during analysis.",
+          "properties": {
+            "setup": { "$ref": "#/definitions/guideFactList" },
+            "first_tasks": { "$ref": "#/definitions/guideFactList" },
+            "architecture": { "$ref": "#/definitions/guideFactList" },
+            "patterns": { "$ref": "#/definitions/guideFactList" },
+            "test_debug": { "$ref": "#/definitions/guideFactList" },
+            "reference": { "$ref": "#/definitions/guideFactList" }
+          },
+          "required": ["setup", "first_tasks", "architecture", "patterns", "test_debug", "reference"],
+          "additionalProperties": false
         }
       },
-      "required": ["generated_at", "source_path", "coverage", "summary", "tech_tags"]
+      "required": ["generated_at", "source_path", "coverage", "summary", "tech_tags", "guide_facts"]
     },
 
     "user_data": {
@@ -106,9 +151,25 @@
             },
             "required": ["id", "title", "layout", "content"]
           }
+        },
+        "guide": {
+          "type": "object",
+          "description": "Compact project-guide subpage generated from repo_context.guide_facts.",
+          "properties": {
+            "title": { "type": "string", "minLength": 1 },
+            "intro": { "type": "string" },
+            "tabs": {
+              "type": "array",
+              "minItems": 6,
+              "maxItems": 6,
+              "items": { "$ref": "#/definitions/guideTab" }
+            }
+          },
+          "required": ["title", "tabs"],
+          "additionalProperties": false
         }
       },
-      "required": ["generated_at", "slides"]
+      "required": ["generated_at", "slides", "guide"]
     },
 
     "quiz": {

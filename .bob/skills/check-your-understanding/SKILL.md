@@ -22,9 +22,9 @@ Look for `onboarding-session.json` in the current directory.
 
 **Run in background** (this phase can be started immediately and run concurrently with Phase 2 if `repo_context` is absent).
 
-Read [`references/understand-repo.md`](references/understand-repo.md) and follow it to produce `repo_context`. Done when all 13 coverage flags are `true`.
+Read [`references/understand-repo.md`](references/understand-repo.md) and follow it to produce `repo_context`. Done when all 13 coverage flags are `true` and every required `repo_context.guide_facts` category contains source-backed facts.
 
-If `repo_context` already exists, check the coverage flags. If any are `false`, re-run only the investigation steps needed to fill the gaps, then update the existing `repo_context` block.
+If `repo_context` already exists, check the coverage flags and `guide_facts`. Re-run only the investigation needed for false flags or missing guide categories; do not repeat the complete repository analysis.
 
 ## Phase 2 — Questionnaire
 
@@ -40,7 +40,7 @@ Done when `user_data` is present and `task_context.goal` is non-empty.
 
 Read [`references/teaching-synthesis.md`](references/teaching-synthesis.md) and produce `curriculum.slides`. Write into `onboarding-session.json`.
 
-Done when `curriculum.slides` contains between 5 and 20 slides, ending with a `quiz-intro` slide.
+Done when `curriculum.slides` contains between 5 and 20 slides ending with a `quiz-intro` slide, and `curriculum.guide.tabs` contains the compact project-guide tabs. If slides already exist but the guide is missing, generate only `curriculum.guide`; preserve the existing slides.
 
 ## Phase 4 — Generate quiz
 
@@ -54,7 +54,7 @@ Done when `quiz.questions` has between 5 and 12 items, every question has a `sli
 
 ## Phase 5 — Build offline learning module
 
-**Requires:** `curriculum.slides` + `quiz.questions`.
+**Requires:** `repo_context.guide_facts` + `curriculum.slides` + `curriculum.guide` + `quiz.questions`.
 
 Read [`references/html-builder.md`](references/html-builder.md) and run the deterministic builder. Never synthesize the HTML, CSS, JavaScript, quiz UI, or Mermaid runtime.
 
