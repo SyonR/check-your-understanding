@@ -517,19 +517,43 @@
       const threshold = Number(data.quiz?.pass_threshold ?? 0.8)
       const answers = new Map()
       const slideTitles = new Map(curriculum.map(slide => [slide.id, slide.title]))
+      let questionOrder = []
+      let optionOrders = new Map()
+      let views = []
 
-      const lessonViews = curriculum.map(slide => ({ kind: 'lesson', key: `lesson-${slide.id}`, slide }))
-      if (guideTabs.length) {
-        const quizIntroIndex = lessonViews.findIndex(view => view.slide.id === 'quiz-intro')
-        const guideIndex = quizIntroIndex >= 0 ? quizIntroIndex : lessonViews.length
-        lessonViews.splice(guideIndex, 0, { kind: 'guide', key: 'project-guide', guide })
+      function shuffledDifferently(items, previous = [], key = value => String(value)) {
+        const next = [...items]
+        for (let index = next.length - 1; index > 0; index -= 1) {
+          const swapIndex = Math.floor(Math.random() * (index + 1))
+          ;[next[index], next[swapIndex]] = [next[swapIndex], next[index]]
+        }
+
+        const unchanged = next.length > 1
+          && next.length === previous.length
+          && next.every((item, index) => key(item) === key(previous[index]))
+        if (unchanged) next.push(next.shift())
+        return next
       }
 
-      const views = [
-        ...lessonViews,
-        ...questions.map((question, index) => ({ kind: 'question', key: `question-${question.id}`, question, index })),
-        { kind: 'result', key: 'quiz-result' },
-      ]
+      function startQuizAttempt() {
+        const previousQuestionOrder = questionOrder
+        const previousOptionOrders = optionOrders
+        questionOrder = shuffledDifferently(questions, previousQuestionOrder, question => String(question.id))
+        optionOrders = new Map(questionOrder.map(question => [
+          question.id,
+          shuffledDifferently(question.options || [], previousOptionOrders.get(question.id) || []),
+        ]))
+
+        const lessonViews = curriculum.map(slide => ({ kind: 'lesson', key: `lesson-${slide.id}`, slide }))
+        if (guideTabs.length) lessonViews.push({ kind: 'guide', key: 'project-guide', guide })
+        views = [
+          ...lessonViews,
+          ...questionOrder.map((question, index) => ({ kind: 'question', key: `question-${question.id}`, question, index })),
+          { kind: 'result', key: 'quiz-result' },
+        ]
+      }
+
+      startQuizAttempt()
 
       const stage = document.getElementById('stage')
       const previousButton = document.getElementById('previous')
@@ -776,7 +800,8 @@
       function renderQuestion(question, questionIndex) {
         const selected = answers.get(question.id)
         const answered = selected !== undefined
-        const options = (question.options || []).map((option, optionIndex) => {
+        const orderedOptions = optionOrders.get(question.id) || question.options || []
+        const options = orderedOptions.map((option, optionIndex) => {
           let state = ''
           if (answered && option === question.answer) state = ' correct'
           else if (answered && option === selected) state = ' wrong'
@@ -801,7 +826,7 @@
         const score = questions.length ? correct / questions.length : 0
         const percentage = Math.round(score * 100)
         const passed = completed && score >= threshold
-        const firstUnanswered = questions.find(question => !answers.has(question.id))
+        const firstUnanswered = questionOrder.find(question => !answers.has(question.id))
 
         if (!completed) {
           return `<article class="learning-page layout-section">
@@ -811,7 +836,7 @@
           </article>`
         }
 
-        const failed = questions.filter(question => answers.get(question.id) !== question.answer)
+        const failed = questionOrder.filter(question => answers.get(question.id) !== question.answer)
         const reviews = failed.map(question => {
           const title = slideTitles.get(question.slide_ref) || question.slide_ref || question.id
           return `<li><button class="review-button" type="button" data-review="${escapeHtml(question.slide_ref || '')}">Review: ${escapeHtml(title)}</button></li>`
@@ -917,7 +942,7 @@
         const optionButton = event.target.closest('[data-question][data-option]')
         if (optionButton) {
           const question = questions.find(item => item.id === optionButton.dataset.question)
-          const option = question?.options?.[Number(optionButton.dataset.option)]
+          const option = optionOrders.get(question?.id)?.[Number(optionButton.dataset.option)]
           if (question && option !== undefined && !answers.has(question.id)) {
             answers.set(question.id, option)
             render()
@@ -941,6 +966,8 @@
 
         if (event.target.closest('[data-retake]')) {
           answers.clear()
+          startQuizAttempt()
+          renderPageNavigation()
           const firstQuestionIndex = views.findIndex(view => view.kind === 'question')
           goTo(firstQuestionIndex >= 0 ? firstQuestionIndex : 0)
         }

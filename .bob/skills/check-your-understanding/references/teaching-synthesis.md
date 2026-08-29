@@ -36,11 +36,12 @@ Build the slide list in this order:
 4. **Repo-specific flows** — the runtime flows from `repo_context` most relevant to `task_context.goal`
 5. **Where you'll be working** (`layout: two-cols`) — files and directories side-by-side with descriptions
 6. **Key conventions** — only conventions that affect their work area
-7. **Quiz intro** (`layout: section`) — transitions to the check-your-understanding
+
+Do not generate a quiz-introduction or "Check Your Understanding" transition slide. The compact Project Guide is the final non-quiz page and leads directly to the first question.
 
 ### Step 3a — Compact project guide
 
-Also produce `curriculum.guide`, a quick-reference subpage shown immediately before the quiz intro. Use exactly these short tabs: `Setup`, `First Tasks`, `Architecture`, `Patterns`, `Test & Debug`, and `Reference`.
+Also produce `curriculum.guide`, a quick-reference subpage shown after the teaching slides and immediately before the first quiz question. Use exactly these short tabs: `Setup`, `First Tasks`, `Architecture`, `Patterns`, `Test & Debug`, and `Reference`.
 
 - Populate each tab only from its matching `repo_context.guide_facts` category: `setup`, `first_tasks`, `architecture`, `patterns`, `test_debug`, or `reference`.
 - Preserve commands, URLs, environment-variable names, and file paths exactly as recorded. When facts conflict, use the fact backed by executable code or configuration rather than prose documentation.
@@ -72,7 +73,7 @@ For any concept where `tech_familiarity[tag] <= 1`, add one analogy line to the 
 
 ### Step 6 — Slide count guard
 
-- Minimum 5 slides (including cover and quiz intro).
+- Minimum 5 teaching slides, including the cover.
 - Maximum 20 slides. If the gap analysis produces more, merge related tech slides and cut any slide not directly on the path to `task_context.goal`.
 
 ## Output

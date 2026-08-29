@@ -21,7 +21,7 @@ A passing developer should be able to answer: "Where would I add X?", "What happ
 
 ## Generation rules
 
-1. **One question per slide** that has a concrete, testable claim. Skip the `cover` and `quiz-intro` slides.
+1. **One question per slide** that has a concrete, testable claim. Skip the `cover` slide.
 2. **Minimum 5 questions, maximum 12.** If slides produce more, keep the questions tied to the developer's `task_context.goal` and cut the rest.
 3. **Each question must have a `slide_ref`** pointing to the slide whose content it tests. This is used by the iterate-on-failure phase.
 4. **Options must be equal length.** For `multiple-choice`, all four options should be approximately the same word count (±3 words). Never give the answer away through formatting.

@@ -40,7 +40,7 @@ Done when `user_data` is present and `task_context.goal` is non-empty.
 
 Read [`references/teaching-synthesis.md`](references/teaching-synthesis.md) and produce `curriculum.slides`. Write into `onboarding-session.json`.
 
-Done when `curriculum.slides` contains between 5 and 20 slides ending with a `quiz-intro` slide, and `curriculum.guide.tabs` contains the compact project-guide tabs. If slides already exist but the guide is missing, generate only `curriculum.guide`; preserve the existing slides.
+Done when `curriculum.slides` contains between 5 and 20 teaching slides with no quiz-introduction slide, and `curriculum.guide.tabs` contains the compact project-guide tabs. If slides already exist but the guide is missing, generate only `curriculum.guide`; preserve the existing slides.
 
 ## Phase 4 — Generate quiz
 

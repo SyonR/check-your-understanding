@@ -40,10 +40,7 @@ highlighter: shiki
 
 Then one `---`-delimited section per slide, setting `layout:` from `curriculum.slides[i].layout` and writing the slide's `content` as Markdown below it. Speaker notes go in `<!-- ... -->` directly after the content. If `teaching_notes` is present, append it to the notes block prefixed with `> Teaching note:`.
 
-After all curriculum slides, append two more sections:
-
-1. A `layout: section` slide titled `# Check Your Understanding`.
-2. A single slide that renders `<QuizQuestion>` for each question and `<QuizResult>` at the end.
+After all curriculum slides, append the interactive quiz directly. Do not add a separate `# Check Your Understanding` transition slide. Render `<QuizQuestion>` for each question and `<QuizResult>` at the end.
 
 ## Slide rendering rules
 
