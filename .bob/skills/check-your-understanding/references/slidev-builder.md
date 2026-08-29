@@ -51,6 +51,18 @@ Write once to `./slidev/components/QuizQuestion.vue`. It must:
 - On click: disable all buttons; highlight correct answer green, chosen-wrong answer red
 - Show `rationale` text after an answer is chosen
 - Emit `answered` event with `{ id, correct: boolean }`
+- Include global CSS that makes any slide containing a quiz question vertically scrollable:
+
+  ```vue
+  <style scoped>
+  .quiz-btn:disabled {
+    pointer-events: none;
+  }
+
+  :global(.slidev-layout:has(.quiz-question)) {
+    overflow-y: auto;
+  }
+  </style>
 
 ## QuizResult.vue
 
