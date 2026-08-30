@@ -27,7 +27,8 @@ Build the slide list in this order:
 4. **Repo-specific flows** — the runtime flows from `repo_context` most relevant to `task_context.goal`
 5. **Where you'll be working** (`layout: two-cols`) — files and directories side-by-side with descriptions
 6. **Key conventions** — only conventions that affect their work area
-7. **Quiz intro** (`layout: section`) — transitions to the check-your-understanding
+
+Do not generate a quiz-introduction slide. The Project Guide is the final non-quiz page and leads directly to the first question.
 
 ## Output of this step
 

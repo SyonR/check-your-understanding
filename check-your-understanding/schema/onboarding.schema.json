@@ -21,6 +21,37 @@
       "minItems": 1,
       "maxItems": 6,
       "items": { "$ref": "#/definitions/guideFact" }
+    },
+    "slideInteraction": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["reveal"] },
+            "prompt": { "type": "string", "minLength": 1 },
+            "answer": { "type": "string", "minLength": 1 }
+          },
+          "required": ["type", "prompt", "answer"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["checkpoint"] },
+            "prompt": { "type": "string", "minLength": 1 },
+            "options": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 4,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "answer": { "type": "string", "minLength": 1 },
+            "rationale": { "type": "string", "minLength": 1 }
+          },
+          "required": ["type", "prompt", "options", "answer", "rationale"],
+          "additionalProperties": false
+        }
+      ]
     }
   },
   "type": "object",
@@ -80,7 +111,6 @@
         "identity": {
           "type": "object",
           "properties": {
-            "name":              { "type": "string" },
             "years_experience":  { "type": "integer", "minimum": 0 },
             "role":              { "type": "string", "enum": ["junior", "mid", "senior", "lead", "other"] }
           }
@@ -105,13 +135,23 @@
           "enum": ["bottom-up", "top-down", "example-first", "concept-first"],
           "description": "How they prefer to be taught."
         },
+        "learning_mode": {
+          "type": "string",
+          "enum": ["standard", "foundations"],
+          "description": "Whether prerequisite CS concepts should be explained on first use."
+        },
+        "interaction_level": {
+          "type": "string",
+          "enum": ["light", "guided"],
+          "description": "How many ungraded embedded learning activities to include."
+        },
         "extra_answers": {
           "type": "object",
           "description": "Any additional free-form answers keyed by question id.",
           "additionalProperties": { "type": "string" }
         }
       },
-      "required": ["collected_at"]
+      "required": ["collected_at", "learning_mode", "interaction_level"]
     },
 
     "curriculum": {
@@ -130,13 +170,14 @@
               "layout":   { "type": "string", "description": "Learning module layout name (e.g. 'default', 'two-cols', 'center', 'section')." },
               "content":  { "type": "string", "description": "Markdown body for this slide." },
               "notes":    { "type": "string", "description": "Speaker notes / teaching notes for this slide." },
-              "teaching_notes": { "type": "string", "description": "Remediation notes written on quiz failure; appended by the iterate-on-failure phase." }
+              "teaching_notes": { "type": "string", "description": "Remediation notes written on quiz failure; appended by the iterate-on-failure phase." },
+              "interaction": { "$ref": "#/definitions/slideInteraction" }
             },
             "required": ["id", "title", "layout", "content"]
           }
         },
         "guide": {
-          "description": "Quick-reference panel shown alongside the quiz. 6 tabs always present; a 7th Key Concepts tab is added for junior developers or when any relevant tech_familiarity is 0.",
+          "description": "Quick-reference panel shown alongside the quiz. 6 tabs always present; a 7th Key Concepts tab is added in Foundations mode, for junior developers, or when any relevant tech_familiarity is 0.",
           "type": "object",
           "properties": {
             "title": { "type": "string" },

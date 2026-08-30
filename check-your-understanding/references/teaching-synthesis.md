@@ -7,6 +7,8 @@ Takes `repo_context` + `user_data` and produces `curriculum.slides` + `curriculu
 
 ## Inputs
 
+- `user_data.learning_mode` — `standard` or prerequisite-friendly `foundations`
+- `user_data.interaction_level` — `light` or `guided`
 - `repo_context.guide_facts` — source-backed facts for the compact project guide
 - `repo_context.summary` — what the codebase is
 - `repo_context.tech_tags` — what technologies are in play
@@ -36,7 +38,12 @@ Populate `curriculum` in `onboarding/onboarding-session.json`:
         "title": "How {repo name} is structured",
         "layout": "default",
         "content": "...",
-        "notes": "Analogy: ..."
+        "notes": "Analogy: ...",
+        "interaction": {
+          "type": "reveal",
+          "prompt": "Before revealing the explanation, predict which component owns this responsibility.",
+          "answer": "The service layer owns it because transport handlers only adapt requests and responses."
+        }
       }
     ],
     "guide": {
@@ -55,6 +62,6 @@ Populate `curriculum` in `onboarding/onboarding-session.json`:
 }
 ```
 
-A 7th `key-concepts` tab is appended by `how-to-format.md` when `identity.role == 'junior'` or any relevant `tech_familiarity == 0`. See [`how-to-format.md`](how-to-format.md) Step 7 for the rules.
+A 7th `key-concepts` tab is appended by `how-to-format.md` in Foundations mode, when `identity.role == 'junior'`, or when any relevant `tech_familiarity == 0`. See [`how-to-format.md`](how-to-format.md) Step 7 for the rules.
 
 Each slide's `content` uses the Markdown subset documented in [`html-builder.md`](html-builder.md), including Mermaid fenced blocks. The `layout` field must be one of: `cover`, `default`, `center`, `two-cols`, `section`. Do not generate a quiz-introduction slide; the Project Guide leads directly to the first quiz question.
