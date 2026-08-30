@@ -110,6 +110,64 @@ def validate_guide_facts(value: Any) -> None:
                 )
 
 
+def validate_interactions(slides: list[Any], value: Any) -> None:
+    user_data = require_object(value, "user_data")
+    learning_mode = user_data.get("learning_mode")
+    interaction_level = user_data.get("interaction_level")
+    if learning_mode not in ("standard", "foundations"):
+        raise ValueError("user_data.learning_mode must be 'standard' or 'foundations'")
+    if interaction_level not in ("light", "guided"):
+        raise ValueError("user_data.interaction_level must be 'light' or 'guided'")
+
+    interactions: list[tuple[int, dict[str, Any]]] = []
+    for index, raw_slide in enumerate(slides):
+        slide = require_object(raw_slide, f"curriculum.slides[{index}]")
+        raw_interaction = slide.get("interaction")
+        if raw_interaction is None:
+            continue
+        if slide.get("layout") == "cover" or slide.get("id") == "cover":
+            raise ValueError(f"curriculum.slides[{index}] cover slide cannot contain an interaction")
+        interaction = require_object(raw_interaction, f"curriculum.slides[{index}].interaction")
+        interactions.append((index, interaction))
+
+    minimum, maximum = (2, 3) if interaction_level == "light" else (4, 6)
+    if not minimum <= len(interactions) <= maximum:
+        raise ValueError(
+            f"interaction_level {interaction_level!r} requires {minimum}-{maximum} slide interactions, "
+            f"got {len(interactions)}"
+        )
+
+    interaction_types: set[str] = set()
+    for slide_index, interaction in interactions:
+        label = f"curriculum.slides[{slide_index}].interaction"
+        interaction_type = interaction.get("type")
+        interaction_types.add(str(interaction_type))
+        prompt = interaction.get("prompt")
+        if not isinstance(prompt, str) or not prompt.strip() or len(prompt.split()) > 30:
+            raise ValueError(f"{label}.prompt must be non-empty and 30 words or fewer")
+
+        if interaction_type == "reveal":
+            answer = interaction.get("answer")
+            if not isinstance(answer, str) or not answer.strip() or len(answer.split()) > 60:
+                raise ValueError(f"{label}.answer must be non-empty and 60 words or fewer")
+        elif interaction_type == "checkpoint":
+            options = require_list(interaction.get("options"), f"{label}.options")
+            if not 2 <= len(options) <= 4 or any(not isinstance(option, str) or not option.strip() for option in options):
+                raise ValueError(f"{label}.options must contain 2-4 non-empty choices")
+            if len(set(options)) != len(options):
+                raise ValueError(f"{label}.options must not contain duplicates")
+            if interaction.get("answer") not in options:
+                raise ValueError(f"{label}.answer must exactly match one option")
+            rationale = interaction.get("rationale")
+            if not isinstance(rationale, str) or not rationale.strip() or len(rationale.split()) > 60:
+                raise ValueError(f"{label}.rationale must be non-empty and 60 words or fewer")
+        else:
+            raise ValueError(f"{label}.type must be 'reveal' or 'checkpoint'")
+
+    if interaction_types != {"reveal", "checkpoint"}:
+        raise ValueError("slide interactions must include at least one reveal and one checkpoint")
+
+
 def infer_title(session: dict[str, Any], slides: list[Any]) -> str:
     if slides and isinstance(slides[0], dict) and slides[0].get("title"):
         return str(slides[0]["title"])
@@ -131,6 +189,7 @@ def build(session_path: Path, output_dir: Path) -> Path:
     quiz = require_object(session.get("quiz"), "quiz")
     slides = require_list(curriculum.get("slides"), "curriculum.slides")
     questions = require_list(quiz.get("questions"), "quiz.questions")
+    validate_interactions(slides, session.get("user_data"))
 
     if not template_path.is_file() or not template_assets.is_dir():
         raise FileNotFoundError(f"Offline HTML template is incomplete: {template_dir}")

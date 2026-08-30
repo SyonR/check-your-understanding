@@ -32,7 +32,7 @@ If `repo_context` already exists, check the coverage flags and `guide_facts`. Re
 
 Read [`references/user-questionnaire.md`](references/user-questionnaire.md) and conduct the three-layer questionnaire interactively. Write answers to `onboarding/user_data.json` and into `onboarding/onboarding-session.json`.
 
-Done when `user_data` is present and `task_context.goal` is non-empty.
+Done when `user_data` is present, `task_context.goal` is non-empty, and both `learning_mode` and `interaction_level` are set.
 
 ## Phase 3 — Teaching synthesis
 
@@ -40,7 +40,7 @@ Done when `user_data` is present and `task_context.goal` is non-empty.
 
 Read [`references/teaching-synthesis.md`](references/teaching-synthesis.md) and produce `curriculum.slides`. Write into `onboarding/onboarding-session.json`.
 
-Done when `curriculum.slides` contains between 5 and 20 teaching slides with no quiz-introduction slide, and `curriculum.guide.tabs` contains the compact project-guide tabs. If slides already exist but the guide is missing, generate only `curriculum.guide`; preserve the existing slides.
+Done when `curriculum.slides` contains between 5 and 20 teaching slides with no quiz-introduction slide, the requested number of valid slide interactions is present, and `curriculum.guide.tabs` contains the compact project-guide tabs. If slides already exist but only the guide or interactions are missing, generate only the missing fields; preserve existing slide content.
 
 ## Phase 4 — Generate quiz
 

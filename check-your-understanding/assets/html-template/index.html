@@ -4,25 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#161616">
   <title>Developer Onboarding</title>
   <style>
     :root {
-      --accent: #6d28d9;
-      --accent-dark: #4c1d95;
-      --accent-soft: #f5f3ff;
-      --background: #f8fafc;
+      --accent: #0f62fe;
+      --accent-dark: #0043ce;
+      --accent-soft: #edf5ff;
+      --background: #f4f4f4;
       --surface: #ffffff;
-      --sidebar: #172033;
-      --sidebar-muted: #b8c2d6;
+      --sidebar: #161616;
+      --sidebar-muted: #c6c6c6;
       --sidebar-expanded: clamp(14rem, 20vw, 18rem);
       --sidebar-collapsed: 4.5rem;
-      --text: #202938;
-      --muted: #667085;
-      --border: #d8dee8;
-      --success: #15803d;
-      --success-soft: #f0fdf4;
-      --danger: #b91c1c;
-      --danger-soft: #fef2f2;
+      --text: #161616;
+      --muted: #525252;
+      --border: #c6c6c6;
+      --success: #198038;
+      --success-soft: #defbe6;
+      --danger: #da1e28;
+      --danger-soft: #fff1f1;
+      --warning-soft: #fff8e1;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
       background: var(--background);
@@ -70,7 +72,7 @@
       overflow-y: auto;
       padding: 0;
       overscroll-behavior: contain;
-      scrollbar-color: #a8b0bf transparent;
+      scrollbar-color: #8d8d8d transparent;
       -webkit-overflow-scrolling: touch;
     }
 
@@ -111,8 +113,8 @@
     code {
       padding: 0.12rem 0.32rem;
       border-radius: 0.3rem;
-      background: #ede9fe;
-      color: #3b0764;
+      background: #edf5ff;
+      color: #001141;
       font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
       font-size: 0.9em;
       overflow-wrap: anywhere;
@@ -123,8 +125,8 @@
       padding: 1rem;
       overflow: auto;
       border-radius: 0.65rem;
-      color: #e5e7eb;
-      background: #111827;
+      color: #f4f4f4;
+      background: #161616;
       text-align: left;
       white-space: pre;
     }
@@ -175,10 +177,74 @@
       margin-top: 1.5rem;
       padding: 1rem;
       border-radius: 0.65rem;
-      background: #fffbeb;
+      background: var(--warning-soft);
     }
 
     .speaker-note summary { cursor: pointer; font-weight: 650; }
+
+    .lesson-interaction {
+      max-width: 64rem;
+      margin-top: clamp(1.5rem, 4vw, 2.5rem);
+      padding: 1rem 0 0 1rem;
+      border-left: 4px solid var(--accent);
+    }
+
+    .interaction-label {
+      margin: 0 0 0.35rem;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .interaction-prompt > :first-child,
+    .interaction-answer > :first-child,
+    .interaction-feedback > :first-child { margin-top: 0; }
+
+    .interaction-prompt > :last-child,
+    .interaction-answer > :last-child,
+    .interaction-feedback > :last-child { margin-bottom: 0; }
+
+    .interaction-action {
+      margin-top: 0.75rem;
+      padding: 0.6rem 0.85rem;
+      border: 1px solid var(--accent);
+      border-radius: 0.45rem;
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .interaction-action:hover,
+    .interaction-action:focus-visible { color: white; background: var(--accent); }
+
+    .interaction-answer,
+    .interaction-feedback {
+      margin-top: 0.9rem;
+      padding: 0.85rem 1rem;
+      border-radius: 0.5rem;
+      background: var(--accent-soft);
+    }
+
+    .interaction-choices { display: grid; gap: 0.55rem; margin-top: 0.85rem; }
+
+    .interaction-choice {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      color: var(--text);
+      background: var(--surface);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .interaction-choice:hover,
+    .interaction-choice:focus-visible { border-color: var(--accent); background: var(--accent-soft); }
+    .interaction-choice.correct { border-color: var(--success); color: var(--success); background: var(--success-soft); }
+    .interaction-choice.wrong { border-color: var(--danger); color: var(--danger); background: var(--danger-soft); }
 
     .guide-page { align-content: start; }
 
@@ -221,7 +287,7 @@
     .guide-tab:focus-visible { color: var(--accent-dark); background: var(--accent-soft); }
 
     .guide-tab[aria-selected="true"] {
-      border-color: #c4b5fd;
+      border-color: #0f62fe;
       color: var(--accent-dark);
       background: var(--accent-soft);
     }
@@ -321,7 +387,7 @@
       overflow: hidden;
       color: white;
       background: var(--sidebar);
-      border-right: 1px solid #2d3a51;
+      border-right: 1px solid #393939;
     }
 
     .navigation-toggle,
@@ -332,7 +398,7 @@
       place-items: center;
       flex: 0 0 auto;
       padding: 0;
-      border: 1px solid #526078;
+      border: 1px solid #6f6f6f;
       border-radius: 0.35rem;
       color: white;
       background: transparent;
@@ -350,8 +416,8 @@
     .nav-arrow:hover:not(:disabled),
     .navigation-toggle:focus-visible,
     .nav-arrow:focus-visible {
-      border-color: #c4b5fd;
-      background: #2b3650;
+      border-color: #78a9ff;
+      background: #393939;
     }
 
     .page-navigation {
@@ -384,12 +450,12 @@
     }
 
     .page-link:hover,
-    .page-link:focus-visible { color: white; background: #253149; }
+    .page-link:focus-visible { color: white; background: #262626; }
 
     .page-link.active {
-      border-color: #8b5cf6;
+      border-color: #4589ff;
       color: white;
-      background: #4c1d95;
+      background: #0043ce;
     }
 
     .page-number {
@@ -423,7 +489,7 @@
       align-items: center;
       gap: 0.5rem;
       padding: 0.8rem;
-      border-top: 1px solid #344158;
+      border-top: 1px solid #393939;
     }
 
     .sidebar-controls .counter { color: var(--sidebar-muted); font-size: 0.82rem; }
@@ -452,10 +518,10 @@
       margin: 0;
     }
     .nav-collapsed .page-link.active .page-number {
-      border-color: #a78bfa;
+      border-color: #78a9ff;
       color: white;
-      background: #5b21b6;
-      box-shadow: 0 0 0 2px rgb(139 92 246 / 25%);
+      background: #0f62fe;
+      box-shadow: 0 0 0 2px rgb(69 137 255 / 35%);
     }
     .nav-collapsed .sidebar-controls {
       grid-template-columns: 1fr;
@@ -516,6 +582,7 @@
       const questions = Array.isArray(data.quiz?.questions) ? data.quiz.questions : []
       const threshold = Number(data.quiz?.pass_threshold ?? 0.8)
       const answers = new Map()
+      const interactionState = new Map()
       const slideTitles = new Map(curriculum.map(slide => [slide.id, slide.title]))
       let questionOrder = []
       let optionOrders = new Map()
@@ -776,7 +843,45 @@
         const speakerNote = slide.notes
           ? `<details class="speaker-note"><summary>Additional context</summary>${markdown(slide.notes)}</details>`
           : ''
-        return `<article class="learning-page layout-${safeLayout(slide.layout)}">${markdown(slide.content)}${teachingNote}${speakerNote}</article>`
+        return `<article class="learning-page layout-${safeLayout(slide.layout)}">${markdown(slide.content)}${renderInteraction(slide)}${teachingNote}${speakerNote}</article>`
+      }
+
+      function renderInteraction(slide) {
+        const interaction = slide.interaction
+        if (!interaction || typeof interaction !== 'object') return ''
+        const state = interactionState.get(slide.id) || {}
+        const prompt = `<div class="interaction-prompt">${markdown(interaction.prompt)}</div>`
+
+        if (interaction.type === 'reveal') {
+          const revealed = Boolean(state.revealed)
+          return `<aside class="lesson-interaction" aria-label="Interactive learning activity">
+            <p class="interaction-label">Pause and predict</p>
+            ${prompt}
+            <button class="interaction-action" type="button" data-interaction-reveal="${escapeHtml(slide.id)}" aria-expanded="${revealed}">${revealed ? 'Hide explanation' : 'Reveal explanation'}</button>
+            ${revealed ? `<div class="interaction-answer" aria-live="polite">${markdown(interaction.answer)}</div>` : ''}
+          </aside>`
+        }
+
+        if (interaction.type === 'checkpoint') {
+          const selected = state.selected
+          const choices = (interaction.options || []).map((option, optionIndex) => {
+            let resultClass = ''
+            if (selected !== undefined && option === interaction.answer) resultClass = ' correct'
+            else if (selected === option) resultClass = ' wrong'
+            return `<button class="interaction-choice${resultClass}" type="button" data-interaction-slide="${escapeHtml(slide.id)}" data-interaction-option="${optionIndex}" aria-pressed="${selected === option}">${inlineMarkdown(option)}</button>`
+          }).join('')
+          const feedback = selected === undefined
+            ? ''
+            : `<div class="interaction-feedback" aria-live="polite"><strong>${selected === interaction.answer ? 'That’s it.' : 'Not quite.'}</strong>${markdown(interaction.rationale)}</div>`
+          return `<aside class="lesson-interaction" aria-label="Ungraded knowledge check">
+            <p class="interaction-label">Quick checkpoint</p>
+            ${prompt}
+            <div class="interaction-choices">${choices}</div>
+            ${feedback}
+          </aside>`
+        }
+
+        return ''
       }
 
       function renderGuide() {
@@ -858,7 +963,26 @@
           mermaid.initialize({
             startOnLoad: false,
             securityLevel: 'strict',
-            theme: 'neutral',
+            theme: 'base',
+            themeVariables: {
+              background: '#ffffff',
+              primaryColor: '#edf5ff',
+              primaryTextColor: '#161616',
+              primaryBorderColor: '#0f62fe',
+              secondaryColor: '#f4f4f4',
+              secondaryTextColor: '#161616',
+              secondaryBorderColor: '#8d8d8d',
+              tertiaryColor: '#d0e2ff',
+              tertiaryTextColor: '#161616',
+              tertiaryBorderColor: '#4589ff',
+              lineColor: '#525252',
+              textColor: '#161616',
+              mainBkg: '#edf5ff',
+              nodeBorder: '#0f62fe',
+              clusterBkg: '#f4f4f4',
+              clusterBorder: '#c6c6c6',
+              edgeLabelBackground: '#ffffff',
+            },
             flowchart: { useMaxWidth: true },
             sequence: { useMaxWidth: true },
           })
@@ -893,7 +1017,8 @@
         })
       }
 
-      function render() {
+      function render(preserveScroll = false) {
+        const previousScroll = stage.scrollTop
         const view = views[currentIndex]
         if (!view) {
           stage.innerHTML = '<article class="learning-page"><h1>No learning content found</h1></article>'
@@ -907,7 +1032,7 @@
         else stage.innerHTML = renderResult()
 
         history.replaceState(null, '', `#${encodeURIComponent(view.key)}`)
-        stage.scrollTop = 0
+        stage.scrollTop = preserveScroll ? previousScroll : 0
         updateChrome()
         renderMermaid()
       }
@@ -931,6 +1056,30 @@
       })
 
       stage.addEventListener('click', event => {
+        const revealButton = event.target.closest('[data-interaction-reveal]')
+        if (revealButton) {
+          const slideId = revealButton.dataset.interactionReveal
+          const previousState = interactionState.get(slideId) || {}
+          interactionState.set(slideId, { ...previousState, revealed: !previousState.revealed })
+          render(true)
+          stage.querySelector('[data-interaction-reveal]')?.focus({ preventScroll: true })
+          return
+        }
+
+        const checkpointButton = event.target.closest('[data-interaction-slide][data-interaction-option]')
+        if (checkpointButton) {
+          const slideId = checkpointButton.dataset.interactionSlide
+          const slide = curriculum.find(item => item.id === slideId)
+          const optionIndex = Number(checkpointButton.dataset.interactionOption)
+          const selected = slide?.interaction?.options?.[optionIndex]
+          if (selected !== undefined) {
+            interactionState.set(slideId, { selected })
+            render(true)
+            stage.querySelector(`[data-interaction-option="${optionIndex}"]`)?.focus({ preventScroll: true })
+          }
+          return
+        }
+
         const guideButton = event.target.closest('[data-guide-tab]')
         if (guideButton) {
           activeGuideTab = guideButton.dataset.guideTab

@@ -1,26 +1,29 @@
 
 # user-questionnaire
 
-Conduct an adaptive terminal questionnaire and write the result to `user_data.json`. The questionnaire has three layers: **identity**, **tech familiarity** (derived from `tech_tags`), and **task context**. Ask all questions interactively, one group at a time.
+Conduct an adaptive terminal questionnaire and write the result to `user_data.json`. The questionnaire has three layers: **experience and learning support**, **tech familiarity** (derived from `tech_tags`), and **task context**. Ask all questions interactively, one group at a time.
 
 ## Prerequisite
 
 `repo_context.tech_tags` must be populated before running this phase. Use it to generate the tech-familiarity questions.
 
-## Identity — Layer 1 (always ask)
+## Experience and learning support — Layer 1 (always ask)
 
 Present as numbered multiple-choice or short-answer prompts. Use `ask_followup_question` for each.
 
 | Question | Type | Stores in |
 |---|---|---|
-| What is your name? | short text | `identity.name` |
 | How many years of software experience do you have? | single choice: 0–1 / 1–3 / 3–7 / 7+ | `identity.years_experience` (midpoint) |
 | What is your current role? | single choice: junior / mid / senior / lead / other | `identity.role` |
 | How do you prefer to learn? | single choice: top-down (big picture first) / bottom-up (details first) / example-first / concept-first | `preferred_style` |
+| How much prerequisite support would help? | single choice: standard / foundations (recommended for students, interns, and career switchers) | `learning_mode` |
+| How interactive should the lesson be? | single choice: light (2–3 activities) / guided (4–6 activities) | `interaction_level` |
+
+Explain that **Foundations mode** defines prerequisite CS concepts on first use and does not assume framework, command-line, HTTP, database, or asynchronous-programming knowledge unless their familiarity answers show otherwise. Do not infer the choice solely from job title; always let the learner choose.
 
 ## Tech familiarity — Layer 2 (adaptive: one question per tech_tag)
 
-For each tag in `repo_context.tech_tags`, ask a familiarity question. Skip tags where the answer is obvious from the identity layer (e.g. a senior developer with 7+ years asked about `javascript`).
+For each tag in `repo_context.tech_tags`, ask a familiarity question. Skip tags where the answer is obvious from the prior-experience answers (e.g. a senior developer with 7+ years asked about `javascript`).
 
 Template:
 > How familiar are you with **{tag}**?
@@ -49,7 +52,7 @@ Write `onboarding/user_data.json`. Also write the `user_data` block into `onboar
 {
   "user_data": {
     "collected_at": "<ISO-8601>",
-    "identity": { "name": "...", "years_experience": 3, "role": "mid" },
+    "identity": { "years_experience": 3, "role": "mid" },
     "tech_familiarity": { "react": 2, "postgres": 1, "docker": 0 },
     "task_context": {
       "has_ticket": true,
@@ -57,7 +60,9 @@ Write `onboarding/user_data.json`. Also write the `user_data` block into `onboar
       "ticket_summary": "Add rate limiting to the /api/upload endpoint.",
       "goal": "Understand where the request pipeline lives so I can add middleware."
     },
-    "preferred_style": "top-down"
+    "preferred_style": "top-down",
+    "learning_mode": "foundations",
+    "interaction_level": "guided"
   }
 }
 ```
